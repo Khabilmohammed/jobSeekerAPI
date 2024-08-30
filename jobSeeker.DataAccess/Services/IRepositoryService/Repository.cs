@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace jobSeeker.DataAccess.Services.IRepositoryService
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T>,IDisposable where T : class
     {
         private readonly DbContext _context;
         private readonly DbSet<T> _dbSet;
@@ -16,6 +16,11 @@ namespace jobSeeker.DataAccess.Services.IRepositoryService
         {
             _context = context;
             _dbSet = _context.Set<T>();
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
         }
 
         public async Task AddAsync(T entity)
@@ -31,16 +36,31 @@ namespace jobSeeker.DataAccess.Services.IRepositoryService
 
         public async Task<T> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            try
+            {
+                return await _dbSet.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                
+                throw new ApplicationException($"Error retrieving entity by ID {id}: {ex.Message}", ex);
+            }
         }
 
         public async Task RemoveAsync(int id)
         {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity != null)
+            try
             {
-                _dbSet.Remove(entity);
-                await _context.SaveChangesAsync();
+                var entity = await _dbSet.FindAsync(id);
+                if (entity != null)
+                {
+                    _dbSet.Remove(entity);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Error removing entity by ID {id}: {ex.Message}", ex);
             }
         }
         public async Task UpdateAsync(T entity)
@@ -48,5 +68,11 @@ namespace jobSeeker.DataAccess.Services.IRepositoryService
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
