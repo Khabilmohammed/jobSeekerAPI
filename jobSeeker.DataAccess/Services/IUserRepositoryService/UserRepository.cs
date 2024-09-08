@@ -25,6 +25,11 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
             await _db.SaveChangesAsync();
         }
 
+        public async Task<ApplicationUser> GetUserByEmailAsync(string email) // New method implementation
+        {
+            return await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
         public async Task<ApplicationUser> GetUserByIdAsync(string userId)
         {
             if (string.IsNullOrEmpty(userId))

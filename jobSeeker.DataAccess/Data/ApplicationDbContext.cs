@@ -17,5 +17,6 @@ namespace jobSeeker.DataAccess.Data
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<UserOTP> UserOTPs { get; set; }
     }
 }

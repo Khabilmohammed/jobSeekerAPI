@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace jobSeeker.Models.DTO
 {
-    public class LoginRequestDTO
+    public class OTPValidationRequestDTO
     {
-        [Required(ErrorMessage = "Username or Email is required.")]
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required.")]
-        public string Password { get; set; }
+        [Required]
+        public string OTP { get; set; }
     }
 }

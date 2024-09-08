@@ -12,5 +12,6 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
         Task<ApplicationUser> GetUserByUsernameAsync(string username);
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task AddUserAsync(ApplicationUser user);
+        Task<ApplicationUser> GetUserByEmailAsync(string email);
     }
 }
