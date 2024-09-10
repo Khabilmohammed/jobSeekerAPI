@@ -1,4 +1,5 @@
-﻿using jobSeeker.DataAccess.Services.IUserRepositoryService;
+﻿using jobSeeker.DataAccess.Services.ITokenBlacklistService;
+using jobSeeker.DataAccess.Services.IUserRepositoryService;
 using jobSeeker.Models;
 using jobSeeker.Models.DTO;
 using Microsoft.AspNetCore.Identity;
@@ -16,17 +17,36 @@ namespace jobSeeker.DataAccess.Services.AuthService
 {
     public class AuthSevice
     {
+       
         private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly ITokenBlacklistServices _tokenBlacklistService;
+
+
         public AuthSevice(IUserRepository userRepository,
             IConfiguration configuration,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+             ITokenBlacklistServices tokenBlacklistService)
         {
             _userRepository = userRepository;
             _configuration = configuration;
             _userManager = userManager;
+            _tokenBlacklistService = tokenBlacklistService;
         }
+
+
+        public async Task LogoutAsync(string token)
+        {
+            await _tokenBlacklistService.AddToBlacklistAsync(token);
+        }
+
+        // Method to validate token against blacklist
+        public async Task<bool> IsTokenBlacklistedAsync(string token)
+        {
+            return await _tokenBlacklistService.IsBlacklistedAsync(token);
+        }
+
 
         public async Task<LoginResposeDTO> LoginAsync(string email, string password)
         {

@@ -235,6 +235,47 @@ namespace jobSeeker.Controllers
                 });
             }
         }
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                // Extract the token from the Authorization header
+                var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return BadRequest(new APIResponse
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        IsSuccess = false,
+                        ErrorMessages = new List<string> { "Token is missing from the request." }
+                    });
+                }
+
+                // Blacklist the token
+                await _authService.LogoutAsync(token);
+
+                return Ok(new APIResponse
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    IsSuccess = true,
+                    Result = "User logged out successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the exception details for debugging
+                // _logger.LogError(ex, "An unexpected error occurred during logout.");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, new APIResponse
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    IsSuccess = false,
+                    ErrorMessages = new List<string> { "An unexpected error occurred during logout. Please try again later." }
+                });
+            }
+        }
         private async Task EnsureRolesExist()
         {
             if (!await _roleManager.RoleExistsAsync(SD.Role_Admin))

@@ -1,8 +1,10 @@
 using jobSeeker.DataAccess.Data;
 using jobSeeker.DataAccess.Services.AuthService;
 using jobSeeker.DataAccess.Services.IEmailService;
+using jobSeeker.DataAccess.Services.ITokenBlacklistService;
 using jobSeeker.DataAccess.Services.IUserRepositoryService;
 using jobSeeker.DataAccess.Services.IWhetherForCastService;
+using jobSeeker.DataAccess.Services.JWTBlackListService;
 using jobSeeker.DataAccess.Services.OtpService;
 using jobSeeker.GlobalErrorHandler;
 using jobSeeker.Models;
@@ -88,10 +90,14 @@ builder.Services.AddScoped<IWheatherForcaset, WhetherForcaseExtended>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<AuthSevice>();
 builder.Services.AddScoped<OTPService>();
+builder.Services.AddScoped<ITokenBlacklistServices, TokenBlacklistService>();
 builder.Services.AddScoped<IEmailservice, Emailservice>();
+
 var app = builder.Build();
 
+// Configure global exception handling middleware
 app.UseMiddleware<ExceptionMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -101,6 +107,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(o => o.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
+// Ensure correct middleware order
 app.UseAuthentication();
 app.UseAuthorization();
 
