@@ -17,6 +17,7 @@ namespace jobSeeker.Controllers
             return "you are authenticated";
         }
 
+
         [HttpGet("admin-only/{id:int}")]
         [Authorize(Roles = SD.Role_Admin)]
         public async Task<ActionResult<string>> GetSomething(int somevalue)

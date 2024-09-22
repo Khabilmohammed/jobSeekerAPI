@@ -1,6 +1,8 @@
 using jobSeeker.DataAccess.Data;
 using jobSeeker.DataAccess.Services.AuthService;
+using jobSeeker.DataAccess.Services.CloudinaryService;
 using jobSeeker.DataAccess.Services.IEmailService;
+using jobSeeker.DataAccess.Services.IPostService;
 using jobSeeker.DataAccess.Services.ITokenBlacklistService;
 using jobSeeker.DataAccess.Services.IUserRepositoryService;
 using jobSeeker.DataAccess.Services.IWhetherForCastService;
@@ -8,6 +10,7 @@ using jobSeeker.DataAccess.Services.JWTBlackListService;
 using jobSeeker.DataAccess.Services.OtpService;
 using jobSeeker.GlobalErrorHandler;
 using jobSeeker.Models;
+using jobSeeker.Models.Mapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +32,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequireLowercase = false;
 });
-
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<CloudinaryServices>();
 builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -91,8 +95,12 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<AuthSevice>();
 builder.Services.AddScoped<OTPService>();
 builder.Services.AddScoped<ITokenBlacklistServices, TokenBlacklistService>();
+builder.Services.AddScoped<IPostServices, PostServices>();
 builder.Services.AddScoped<IEmailservice, Emailservice>();
 
+
+
+builder.Services.AddAutoMapper(typeof(MappingProfile)); 
 var app = builder.Build();
 
 // Configure global exception handling middleware

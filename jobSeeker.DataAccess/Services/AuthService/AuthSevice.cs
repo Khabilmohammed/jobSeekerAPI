@@ -72,6 +72,7 @@ namespace jobSeeker.DataAccess.Services.AuthService
                 return new LoginResposeDTO
                 {
                     Username = user.UserName,
+                    Id=user.Id,
                     Email = user.Email,
                     Token = tokenHandler.WriteToken(token),
                     Expiration = tokenDescriptor.Expires.Value,
