@@ -13,6 +13,8 @@ namespace jobSeeker.Models.Mapper
         public MappingProfile()
         {
             CreateMap<Post, PostDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
                 .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
                 .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes))
                 .ForMember(dest => dest.Shares, opt => opt.MapFrom(src => src.Shares))
@@ -20,9 +22,7 @@ namespace jobSeeker.Models.Mapper
                 .ReverseMap();
 
             CreateMap<CreatePostDTO, Post>()
-                .ForMember(dest => dest.Images, opt => opt.MapFrom(src =>
-                    src.Images.Select(image => new PostImage { ImageUrl = string.Empty })) // Temporary placeholder for URL
-                );
+             .ForMember(dest => dest.Images, opt => opt.Ignore()); // **Ignore Images Mapping**
 
             CreateMap<Comment, CommentDTO>().ReverseMap();
             CreateMap<Like, LikeDTO>().ReverseMap();

@@ -33,31 +33,21 @@ namespace jobSeeker.Controllers
                     return BadRequest(ResponseHelper.Error("Invalid data provided."));
                 }
 
+                if (createPostDTO.Images == null || !createPostDTO.Images.Any())
+                {
+                    return BadRequest(new { message = "Post must include at least one image." });
+                }
+
                 var post = _mapper.Map<Post>(createPostDTO);
                 var createdPost = await _postServices.CreatePostAsync(post);
 
+                
+
                 if (createPostDTO.Images != null && createPostDTO.Images.Any())
                 {
-                    var uniqueImageUrls = new HashSet<string>();
-
                     foreach (var imageFile in createPostDTO.Images)
                     {
-                        // Upload image to Cloudinary and get URL
-                        var imageUrl = await _postServices.UploadImageAsync(imageFile, createdPost.PostId);
-
-                        // Create a PostImage instance
-                        var postImage = new PostImage
-                        {
-                            PostId = createdPost.PostId,
-                            ImageUrl = imageUrl
-                        };
-
-                        // Check if the image URL is unique
-                        if (uniqueImageUrls.Add(imageUrl))
-                        {
-                            // Add the image to the database
-                            await _postServices.AddImageAsync(postImage);
-                        }
+                        await _postServices.AddImageAsync(imageFile, createdPost.PostId);
                     }
                 }
 
@@ -70,7 +60,6 @@ namespace jobSeeker.Controllers
                     ResponseHelper.Error("An unexpected error occurred while creating the post: " + ex.Message));
             }
         }
-
 
 
         [HttpGet("GetPost/{postId}")]
@@ -93,6 +82,7 @@ namespace jobSeeker.Controllers
             var postDtos = _mapper.Map<IEnumerable<PostDTO>>(posts);
             return Ok(ResponseHelper.Success(postDtos));
         }
+
 
         [HttpPut("UpdatePost/{postId}")]
         public async Task<IActionResult> UpdatePost(int postId, [FromBody] PostDTO postDto)

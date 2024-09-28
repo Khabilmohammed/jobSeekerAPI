@@ -31,11 +31,9 @@ namespace jobSeeker.DataAccess.Services.IPostService
 
 
         //image related method
-        Task<PostImage> AddImageAsync(PostImage postImage);
         Task<PostImage> AddImageAsync(IFormFile imageFile, int postId);
         Task<bool> RemoveImageAsync(int imageId);
 
-        Task<string> UploadImageAsync(IFormFile imageFile, int postId);
 
     }
 }

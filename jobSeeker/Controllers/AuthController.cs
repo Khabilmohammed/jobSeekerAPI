@@ -1,5 +1,7 @@
 ﻿
-using jobSeeker.DataAccess.Services.AuthService;
+using Azure;
+using Azure.Identity;
+using jobSeeker.DataAccess.Data.Repository.IUserRepository;
 using jobSeeker.DataAccess.Services.IEmailService;
 using jobSeeker.DataAccess.Services.IUserRepositoryService;
 using jobSeeker.DataAccess.Services.OtpService;
@@ -18,27 +20,12 @@ namespace jobSeeker.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly AuthSevice _authService;
-        private readonly OTPService _otpService;
-        private readonly IEmailservice _emailService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private static readonly Dictionary<string, RegisterRequestDTO> _temporaryStorage = new();
-
-        public AuthController(IUserRepository userRepository,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            AuthSevice authService,
-            IEmailservice emailService,
-            OTPService otpService)
+        private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
-            _userRepository = userRepository;
-            _emailService = emailService;
-            _otpService = otpService;
-            _userManager = userManager;
-            _roleManager = roleManager;
             _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -46,34 +33,21 @@ namespace jobSeeker.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return BadRequest(ResponseHelper.Error(errors));
+                _logger.LogWarning("Invalid model state for Register request");
+                return BadRequest(ResponseHelper.Error(ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()));
+
             }
 
             try
             {
-                var existingUser = await _userRepository.GetUserByUsernameAsync(model.Username);
-                if (existingUser != null)
-                    return BadRequest(ResponseHelper.Error("User already exists with this username."));
-
-                existingUser = await _userRepository.GetUserByEmailAsync(model.Email);
-                if (existingUser != null)
-                    return BadRequest(ResponseHelper.Error("User already exists with this email."));
-
-                var otp = await _otpService.GenerateAndSaveOTPAsync(model.Email);
-                var subject = "Your OTP Code";
-                var body = $"Your OTP code is {otp}. It is valid for 10 minutes. Please complete the registration.";
-                await _emailService.SendEmailAsync(model.Email, subject, body);
-
-                // Store registration details temporarily
-                _temporaryStorage[model.Email] = model;
-
-                return Ok(ResponseHelper.Success("An OTP has been sent to your email."));
+                await _authService.RegisterAsync(model);
+                _logger.LogInformation("User otp sent successfully. OTP sent to email: {Email}", model.Email);
+                return Ok(new { Message = "OTP has been sent to your email." });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, 
-                    ResponseHelper.Error("An unexpected error occurred. Please try again later.", HttpStatusCode.InternalServerError));
+                _logger.LogError(ex, "Error during user registration");
+                return BadRequest(new { Error = ex.Message });
             }
         }
 
@@ -81,93 +55,83 @@ namespace jobSeeker.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ResponseHelper.Error("Invalid input data."));
-
+            {
+                _logger.LogWarning("Invalid model state for Login request");
+                return BadRequest(ResponseHelper.Error(ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()));
+            }
             try
             {
-                var loginResponse = await _authService.LoginAsync(model.Email, model.Password);
-                if (loginResponse == null)
-                    return Unauthorized(ResponseHelper.Error("Invalid username or password.", HttpStatusCode.Unauthorized));
-
-                return Ok(ResponseHelper.Success(loginResponse));
+                var response = await _authService.LoginAsync(model.Email,model.Password);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    _logger.LogInformation("User logged in successfully: {Email}", model.Email);
+                    return Ok(ResponseHelper.Success(response));
+                }
+                else
+                {
+                    _logger.LogWarning("Failed login attempt for user: {Email}", model.Email);
+                    return StatusCode((int)response.StatusCode, ResponseHelper.Error(response.ErrorMessages, response.StatusCode));
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ResponseHelper.Error("An unexpected error occurred during login. Please try again later.", HttpStatusCode.InternalServerError));
+                _logger.LogError(ex, "Error during login for user: {Email}", model.Email);
+                return Unauthorized(new { Error = ex.Message });
             }
         }
 
         [HttpPost("validate-otp")]
         public async Task<IActionResult> ValidateOTP([FromBody] OTPValidationRequestDTO model)
         {
-            if (model == null || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.OTP))
-                return BadRequest(ResponseHelper.Error("Invalid request data."));
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for otp validation");
+                return BadRequest(ModelState);
+            }
 
             try
             {
-                var isValid = await _otpService.ValidateOTPAsync(model.Email, model.OTP);
-                if (!isValid)
-                    return BadRequest(ResponseHelper.Error("Invalid or expired OTP."));
-
-                if (!_temporaryStorage.TryGetValue(model.Email, out var registrationDetails))
-                    return BadRequest(ResponseHelper.Error("Registration details not found."));
-
-                var newUser = new ApplicationUser
+                var success = await _authService.ValidateOtpAsync(model);
+                if (success)
                 {
-                    UserName = registrationDetails.Username,
-                    Email = model.Email,
-                    FirstName = registrationDetails.FirstName,
-                    MiddleName = registrationDetails.MiddleName,
-                    LastName = registrationDetails.LastName,
-                    City = registrationDetails.City,
-                    Country = registrationDetails.Country,
-                    Pincode = registrationDetails.Pincode,
-                    EmailConfirmed = true
-                };
+                    _logger.LogInformation("OTP validated successfully for user: {Email}", model.Email);
+                    return Ok(new { Message = "OTP validated and user registered successfully." });
+                }
+                else
+                {
+                    _logger.LogWarning("ivalid otp registration for user:{Email}",model.Email); 
+                    return BadRequest(new { Error = "Invalid OTP or registration details." });
 
-                var result = await _userManager.CreateAsync(newUser, registrationDetails.Password);
-                if (!result.Succeeded)
-                    return BadRequest(ResponseHelper.Error(result.Errors.Select(e => e.Description).ToList()));
-
-                await EnsureRolesExist();
-                await _userManager.AddToRoleAsync(newUser, registrationDetails.Role);
-
-                _temporaryStorage.Remove(model.Email);
-                return Ok(ResponseHelper.Success("User registered successfully and email confirmed."));
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ResponseHelper.Error("An unexpected error occurred. Please try again later.", HttpStatusCode.InternalServerError));
+                _logger.LogError(ex, "Error during the otp validation");
+                return StatusCode(500, new { Error = ex.Message });
             }
         }
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
+            var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            if (string.IsNullOrEmpty(token))
+            {
+                _logger.LogWarning("Logout attempt failed: Invalid or missing token.");
+                return BadRequest(ResponseHelper.Error("Invalid or missing token."));
+            }
+
             try
             {
-                var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                if (string.IsNullOrEmpty(token))
-                    return BadRequest(ResponseHelper.Error("Token is missing from the request."));
-
                 await _authService.LogoutAsync(token);
-                return Ok(ResponseHelper.Success("User logged out successfully."));
+                _logger.LogInformation("User logged out successfully with token: {Token}", token);
+                return Ok(ResponseHelper.Success(new { Message = "User logged out successfully." }));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError,
-                    ResponseHelper.Error("An unexpected error occurred during logout. Please try again later.", HttpStatusCode.InternalServerError));
+                _logger.LogError(ex, "Error during logout for token: {Token}", token);
+                return StatusCode(500, ResponseHelper.Error(ex.Message));
             }
-        }
-
-        private async Task EnsureRolesExist()
-        {
-            if (!await _roleManager.RoleExistsAsync(SD.Role_Admin))
-                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin));
-            if (!await _roleManager.RoleExistsAsync(SD.Role_User))
-                await _roleManager.CreateAsync(new IdentityRole(SD.Role_User));
-            if (!await _roleManager.RoleExistsAsync(SD.Role_Company))
-                await _roleManager.CreateAsync(new IdentityRole(SD.Role_Company));
         }
     }
 }

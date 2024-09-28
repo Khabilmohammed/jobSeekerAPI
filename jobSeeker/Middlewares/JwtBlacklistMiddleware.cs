@@ -1,4 +1,4 @@
-﻿using jobSeeker.DataAccess.Services.AuthService;
+﻿using jobSeeker.DataAccess.Services.IUserRepositoryService;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Concurrent;
@@ -13,9 +13,9 @@ namespace jobSeeker.DataAccess.Services.JWTBlackListService
     public class JwtBlacklistMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly AuthSevice _authService;
+        private readonly AuthService _authService;
 
-        public JwtBlacklistMiddleware(RequestDelegate next, AuthSevice authService)
+        public JwtBlacklistMiddleware(RequestDelegate next, AuthService authService)
         {
             _next = next;
             _authService = authService;

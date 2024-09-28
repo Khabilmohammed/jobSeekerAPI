@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace jobSeeker.DataAccess.Services.IUserRepositoryService
+namespace jobSeeker.DataAccess.Data.Repository.IUserRepository
 {
     public interface IUserRepository
     {

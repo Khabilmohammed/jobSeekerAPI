@@ -1,5 +1,5 @@
 using jobSeeker.DataAccess.Data;
-using jobSeeker.DataAccess.Services.AuthService;
+using jobSeeker.DataAccess.Data.Repository.IUserRepository;
 using jobSeeker.DataAccess.Services.CloudinaryService;
 using jobSeeker.DataAccess.Services.IEmailService;
 using jobSeeker.DataAccess.Services.IPostService;
@@ -17,9 +17,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)  // Reads from appsettings.json
+    .Enrich.FromLogContext()
+    .WriteTo.Console()  // Logs to the console
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)  // Logs to a file, rolling daily
+    .CreateLogger();
 
+builder.Host.UseSerilog();
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDBConnection")));
@@ -90,10 +98,11 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
 builder.Services.AddScoped<IWheatherForcaset, WhetherForcaseExtended>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<AuthSevice>();
 builder.Services.AddScoped<OTPService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenBlacklistServices, TokenBlacklistService>();
 builder.Services.AddScoped<IPostServices, PostServices>();
 builder.Services.AddScoped<IEmailservice, Emailservice>();
@@ -123,4 +132,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+Log.CloseAndFlush();
 

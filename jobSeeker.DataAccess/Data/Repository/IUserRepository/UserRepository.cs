@@ -7,14 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace jobSeeker.DataAccess.Services.IUserRepositoryService
+namespace jobSeeker.DataAccess.Data.Repository.IUserRepository
 {
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _db;
         public UserRepository(ApplicationDbContext db)
         {
-            _db = db;   
+            _db = db;
         }
         public async Task AddUserAsync(ApplicationUser user)
         {

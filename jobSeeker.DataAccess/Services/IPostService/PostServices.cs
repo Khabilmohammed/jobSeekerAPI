@@ -3,6 +3,7 @@ using jobSeeker.DataAccess.Services.CloudinaryService;
 using jobSeeker.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,13 @@ namespace jobSeeker.DataAccess.Services.IPostService
     {
         private readonly ApplicationDbContext _db;
         private readonly CloudinaryServices _cloudinaryServices;
-        public PostServices(ApplicationDbContext db, CloudinaryServices cloudinaryServices)
+        private readonly ILogger<PostServices> _logger;
+        public PostServices(ApplicationDbContext db, CloudinaryServices cloudinaryServices,
+            ILogger<PostServices> logger)
         {
             _db = db;
             _cloudinaryServices = cloudinaryServices;
+            _logger = logger;
         }
         public async Task<Post> CreatePostAsync(Post post)
         {
@@ -40,6 +44,7 @@ namespace jobSeeker.DataAccess.Services.IPostService
         public async Task<Post> GetPostByIdAsync(int postId)
         {
             return await _db.Posts
+                .Include(p => p.User)
                 .Include(p => p.Comments)
                 .Include(p => p.Likes)
                 .Include(p => p.Shares)
@@ -50,6 +55,7 @@ namespace jobSeeker.DataAccess.Services.IPostService
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
             return await _db.Posts
+                .Include(p => p.User)
                 .Include(p => p.Comments)
                 .Include(p => p.Likes)
                 .Include(p => p.Shares)
@@ -126,62 +132,60 @@ namespace jobSeeker.DataAccess.Services.IPostService
             return share;
         }
 
-        public async Task<PostImage> AddImageAsync(PostImage postImage)
-        {
-            // Check for existing image before adding
-            var existingImage = await _db.PostImages
-                .FirstOrDefaultAsync(img => img.ImageUrl == postImage.ImageUrl && img.PostId == postImage.PostId);
-
-            if (existingImage != null)
-            {
-                return existingImage; // Return the existing image instead of adding it again
-            }
-
-            _db.PostImages.Add(postImage);
-            await _db.SaveChangesAsync();
-            return postImage;
-        }
-
         public async Task<PostImage> AddImageAsync(IFormFile imageFile, int postId)
         {
+            if (imageFile == null || imageFile.Length == 0)
+            {
+                throw new ArgumentException("Invalid image file.");
+            }
+
             try
             {
+                _logger.LogInformation("Starting image upload for PostId: {PostId}", postId);
+
                 // Upload the image to Cloudinary
                 var uploadResult = await _cloudinaryServices.UploadImageAsync(imageFile);
 
                 if (uploadResult == null || string.IsNullOrEmpty(uploadResult.SecureUrl.ToString()))
                 {
+                    _logger.LogError("Image upload failed for PostId: {PostId}", postId);
                     throw new InvalidOperationException("Image upload failed.");
+                }
+
+                var imageUrl = uploadResult.SecureUrl.ToString();
+
+                // Check if the image already exists for the post to avoid duplicates
+                var existingImage = await _db.PostImages
+                    .FirstOrDefaultAsync(img => img.ImageUrl == imageUrl && img.PostId == postId);
+
+                if (existingImage != null)
+                {
+                    _logger.LogInformation("Image already exists for PostId: {PostId}", postId);
+                    return existingImage; // Return the existing image instead of adding it again
                 }
 
                 var postImage = new PostImage
                 {
                     PostId = postId,
-                    ImageUrl = uploadResult.SecureUrl.ToString()
+                    ImageUrl = imageUrl
                 };
-
-                // Check for existing image before adding
-                var existingImage = await _db.PostImages
-                    .FirstOrDefaultAsync(img => img.ImageUrl == postImage.ImageUrl && img.PostId == postId);
-
-                if (existingImage != null)
-                {
-                    return existingImage; // Return the existing image instead of adding it again
-                }
 
                 _db.PostImages.Add(postImage);
                 await _db.SaveChangesAsync();
+
+                _logger.LogInformation("Image added successfully for PostId: {PostId}", postId);
 
                 return postImage;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error uploading image for PostId: {PostId}", postId);
                 throw new Exception($"An error occurred while uploading the image: {ex.Message}");
             }
         }
 
 
-      
+
         public async Task<bool> RemoveImageAsync(int imageId)
         {
             var image = await _db.PostImages.FindAsync(imageId);
@@ -193,9 +197,6 @@ namespace jobSeeker.DataAccess.Services.IPostService
             return false;
         }
 
-        public async Task<string> UploadImageAsync(IFormFile imageFile, int postId)
-        {
-            return await AddImageAsync(imageFile, postId).ContinueWith(task => task.Result.ImageUrl);
-        }
+       
     }
 }
