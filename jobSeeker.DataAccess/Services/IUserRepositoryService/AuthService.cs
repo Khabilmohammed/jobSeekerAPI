@@ -16,6 +16,9 @@ using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using jobSeeker.DataAccess.Services.ITokenBlacklistService;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
+using jobSeeker.DataAccess.Services.TokenService;
+using System.Web;
 
 namespace jobSeeker.DataAccess.Services.IUserRepositoryService
 {
@@ -27,7 +30,9 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenBlacklistServices _tokenBlacklistService;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ITokenService _tokenService;
         private readonly IConfiguration _configuration;
+        private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
         private static readonly Dictionary<string, RegisterRequestDTO> _temporaryStorage = new();
 
         public AuthService(IUserRepository userRepository,
@@ -36,7 +41,10 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
                            OTPService otpService,
                            IEmailservice emailService,
                            IConfiguration configuration,
-                             ITokenBlacklistServices tokenBlacklistService)
+                           ITokenBlacklistServices tokenBlacklistService,
+                           IPasswordHasher<ApplicationUser> passwordHasher,
+                           ITokenService tokenService
+                             )
         {
             _userRepository = userRepository;
             _userManager = userManager;
@@ -45,7 +53,8 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
             _emailService = emailService;
             _configuration = configuration;
             _tokenBlacklistService = tokenBlacklistService;
-
+            _passwordHasher = passwordHasher;
+            _tokenService=tokenService;
         }
 
         public async Task RegisterAsync(RegisterRequestDTO model)
@@ -146,6 +155,24 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
             return true;
         }
 
+        public async Task ResendOtpAsync(string email)
+        {
+
+            var existingUserOtp = await _userRepository.GetUserByOTPtableAsync(email);
+
+            if (existingUserOtp == null)
+                throw new Exception("User not found with this email.");
+
+            // Generate a new OTP
+            var otp = await _otpService.GenerateAndSaveOTPAsync(email);
+            var subject = "Your OTP Code";
+            var body = $"Your new OTP code is {otp}. It is valid for 10 . Please complete the registration.";
+
+            // Send the email
+            await _emailService.SendEmailAsync(email, subject, body);
+        }
+
+
         public async Task LogoutAsync(string token)
         {
             await _tokenBlacklistService.AddToBlacklistAsync(token);
@@ -155,6 +182,40 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
         public async Task<bool> IsTokenBlacklistedAsync(string token)
         {
             return await _tokenBlacklistService.IsBlacklistedAsync(token);
+        }
+
+
+        public async Task ForgetPasswordAsync(string email)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null)
+                throw new Exception("User with this email doesn't exist.");
+
+            // Generate a password reset token
+            var resetToken = await _tokenService.GeneratePasswordResetTokenAsync(user);
+
+            // Generate the reset link (this could be an API endpoint on your front-end)
+            var resetLink = $"http://localhost:3000/resetPassword?email={user.Email}&token={HttpUtility.UrlEncode(resetToken)}";
+            var subject = "Password Reset Request";
+            var body = $"Please reset your password using this link: {resetLink}. The link is valid for 15 minutes.";
+
+            // Send the password reset email
+            await _emailService.SendEmailAsync(user.Email, subject, body);
+        }
+
+        public async Task ResetPasswordAsync(string email, string token, string newPassword)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null)
+                throw new Exception("Invalid email.");
+
+            var isValidToken = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", token);
+            if (!isValidToken)
+                throw new Exception("Invalid or expired token.");
+
+            // Hash the new password and update it
+            var hashedPassword = _passwordHasher.HashPassword(user, newPassword);
+            await _userRepository.UpdatePasswordAsync(user, hashedPassword);
         }
 
         private async Task EnsureRolesExist()

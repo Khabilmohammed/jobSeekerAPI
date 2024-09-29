@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using Serilog;
+using jobSeeker.DataAccess.Services.TokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -103,6 +104,7 @@ builder.Services.AddScoped<IWheatherForcaset, WhetherForcaseExtended>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<OTPService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ITokenBlacklistServices, TokenBlacklistService>();
 builder.Services.AddScoped<IPostServices, PostServices>();
 builder.Services.AddScoped<IEmailservice, Emailservice>();
@@ -112,7 +114,6 @@ builder.Services.AddScoped<IEmailservice, Emailservice>();
 builder.Services.AddAutoMapper(typeof(MappingProfile)); 
 var app = builder.Build();
 
-// Configure global exception handling middleware
 app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.

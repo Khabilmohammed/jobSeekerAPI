@@ -21,12 +21,27 @@ namespace jobSeeker.DataAccess.Services.OtpService
 
         public async Task<string> GenerateAndSaveOTPAsync(string userId)
         {
-            string otp = GenerateOTP(); // You can implement a method to generate random OTP
+            // Invalidate the previous OTP if it exists
+            var previousOtp = await _context.UserOTPs
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.CreatedAt) // Get the latest OTP
+                .FirstOrDefaultAsync();
+
+            if (previousOtp != null)
+            {
+                previousOtp.IsUsed = true; // Mark the previous OTP as used
+                _context.UserOTPs.Update(previousOtp); // Update in the database
+            }
+
+            // Generate a new OTP
+            string otp = GenerateOTP(); // You can implement a method to generate a random OTP
             var userOTP = new UserOTP
             {
                 UserId = userId,
                 OTP = otp,
-                OTPExpiryTime = DateTime.UtcNow.AddMinutes(10) // 10 minutes validity
+                OTPExpiryTime = DateTime.UtcNow.AddMinutes(10), // 10 minutes validity
+                IsUsed = false, // Ensure the new OTP is not used
+                CreatedAt = DateTime.UtcNow // Set created time
             };
 
             try
@@ -42,6 +57,7 @@ namespace jobSeeker.DataAccess.Services.OtpService
 
             return otp;
         }
+
 
         public async Task<bool> ValidateOTPAsync(string userId, string otp)
         {

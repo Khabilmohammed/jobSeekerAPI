@@ -51,6 +51,29 @@ namespace jobSeeker.Controllers
             }
         }
 
+
+        [HttpPost("resend-otp")]
+        public async Task<IActionResult> ResendOTP([FromBody] ResendOTPRequestDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for resend OTP request");
+                return BadRequest(ResponseHelper.Error(ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()));
+            }
+
+            try
+            {
+                await _authService.ResendOtpAsync(model.Email);
+                _logger.LogInformation("OTP resent successfully. OTP sent to email: {Email}", model.Email);
+                return Ok(new { Message = "OTP has been resent to your email." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during resending OTP");
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
@@ -133,5 +156,51 @@ namespace jobSeeker.Controllers
                 return StatusCode(500, ResponseHelper.Error(ex.Message));
             }
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for forgot password request");
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                await _authService.ForgetPasswordAsync(model.Email);
+                _logger.LogInformation("Password reset link sent successfully to: {Email}", model.Email);
+                return Ok(new { Message = "Password reset link has been sent to your email." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during forgot password for: {Email}", model.Email);
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for reset password request");
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                await _authService.ResetPasswordAsync(model.Email, model.Token, model.NewPassword);
+                _logger.LogInformation("Password reset successfully for: {Email}", model.Email);
+                return Ok(new { Message = "Password has been reset successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password reset for: {Email}", model.Email);
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
     }
 }

@@ -38,12 +38,27 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserRepository
             return await _db.Users.FindAsync(userId);
         }
 
+        public async Task UpdatePasswordAsync(ApplicationUser user, string newPasswordHash)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            user.PasswordHash = newPasswordHash;
+            _db.Users.Update(user);
+            await _db.SaveChangesAsync();
+        }
+
         public async Task<ApplicationUser> GetUserByUsernameAsync(string username)
         {
             if (string.IsNullOrEmpty(username))
                 throw new ArgumentException("Username cannot be null or empty", nameof(username));
 
             return await _db.Users.SingleOrDefaultAsync(u => u.UserName == username);
+        }
+
+        public async Task<UserOTP> GetUserByOTPtableAsync(string email) // New method implementation
+        {
+            return await _db.UserOTPs.FirstOrDefaultAsync(u => u.UserId == email);
         }
     }
 }

@@ -14,5 +14,9 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
         Task<APIResponse> LoginAsync(string email, string password);
         Task<bool> ValidateOtpAsync(OTPValidationRequestDTO model);
         Task LogoutAsync(string token);
+        Task ResendOtpAsync(string email);
+
+        Task ForgetPasswordAsync(string email);
+        Task ResetPasswordAsync(string email, string token, string newPassword);
     }
 }

@@ -13,5 +13,10 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserRepository
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task AddUserAsync(ApplicationUser user);
         Task<ApplicationUser> GetUserByEmailAsync(string email);
+
+        Task<UserOTP> GetUserByOTPtableAsync(string email);
+
+        Task UpdatePasswordAsync(ApplicationUser user,string newPassword);
+
     }
 }
