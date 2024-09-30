@@ -19,6 +19,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Serilog;
 using jobSeeker.DataAccess.Services.TokenService;
+using jobSeeker.DataAccess.Data.Repository.IUserManagementRepo;
+using jobSeeker.DataAccess.Services.IUsermanagemetService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -102,6 +104,8 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IWheatherForcaset, WhetherForcaseExtended>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserManagementRepository, UserManagementRepository>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<OTPService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

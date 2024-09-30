@@ -83,6 +83,10 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
             {
                 return ResponseHelper.Error("User not found.", HttpStatusCode.NotFound);
             }
+            if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTimeOffset.UtcNow)
+            {
+                return ResponseHelper.Error($"Account is locked until {user.LockoutEnd.Value.UtcDateTime}.", HttpStatusCode.Forbidden);
+            }
             if (!await _userManager.CheckPasswordAsync(user, password))
             {
                 return ResponseHelper.Error("Invalid password.", HttpStatusCode.Unauthorized);

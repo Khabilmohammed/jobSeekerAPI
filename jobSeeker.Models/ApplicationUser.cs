@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,5 +41,8 @@ namespace jobSeeker.Models
         [Required(ErrorMessage = "Username is required.")]
         [RegularExpression(@"^[a-zA-Z0-9]*$", ErrorMessage = "Username can only contain letters and numbers.")]
         public override string UserName { get; set; }
+
+        [NotMapped]  // This prevents this property from being added to the database
+        public string Role { get; set; }
     }
 }
