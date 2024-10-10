@@ -177,6 +177,27 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
         }
 
 
+        public async Task RegistartionResendOtpAsync(string email)
+        {
+            // Check if the email exists in the user repository (temporary or registered users)
+            var existingUserOtp = await _userRepository.GetUserByOTPtableAsync(email);
+            if (existingUserOtp == null)
+            {
+                throw new Exception("User not found with this email.");
+            }
+
+            // Generate a new OTP
+            var otp = await _otpService.GenerateAndSaveOTPAsync(email);
+
+            // Prepare the email content
+            var subject = "Your OTP Code";
+            var body = $"Your new OTP code is {otp}. It is valid for 10 minutes. Please complete the registration.";
+
+            // Send the OTP email
+            await _emailService.SendEmailAsync(email, subject, body);
+        }
+
+
         public async Task LogoutAsync(string token)
         {
             await _tokenBlacklistService.AddToBlacklistAsync(token);

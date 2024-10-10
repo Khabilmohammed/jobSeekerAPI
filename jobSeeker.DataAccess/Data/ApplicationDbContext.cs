@@ -44,6 +44,12 @@ namespace jobSeeker.DataAccess.Data
                 .WithOne(i => i.Post)
                 .HasForeignKey(i => i.PostId)
                  .OnDelete(DeleteBehavior.NoAction);
+
+                modelBuilder.Entity<Story>()
+           .HasOne(s => s.User)
+           .WithMany() 
+           .HasForeignKey(s => s.UserId)
+           .OnDelete(DeleteBehavior.NoAction);
         }
 
 
@@ -54,5 +60,6 @@ namespace jobSeeker.DataAccess.Data
         public DbSet<Share> Shares { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Story> Stories { get; set; }
     }
 }

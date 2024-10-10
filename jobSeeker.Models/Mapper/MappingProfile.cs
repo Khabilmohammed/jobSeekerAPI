@@ -22,12 +22,21 @@ namespace jobSeeker.Models.Mapper
                 .ReverseMap();
 
             CreateMap<CreatePostDTO, Post>()
-             .ForMember(dest => dest.Images, opt => opt.Ignore()); // **Ignore Images Mapping**
+             .ForMember(dest => dest.Images, opt => opt.Ignore()); 
 
             CreateMap<Comment, CommentDTO>().ReverseMap();
             CreateMap<Like, LikeDTO>().ReverseMap();
             CreateMap<Share, ShareDTO>().ReverseMap();
             CreateMap<PostImage, PostImageDTO>().ReverseMap();
+
+
+            CreateMap<Story, StoryDTO>()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+            .ReverseMap();
+
+            CreateMap<CreateStoryDTO, Story>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
         }
     }
 }

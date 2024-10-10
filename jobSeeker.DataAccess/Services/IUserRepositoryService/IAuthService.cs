@@ -16,6 +16,8 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
         Task LogoutAsync(string token);
         Task ResendOtpAsync(string email);
 
+        Task RegistartionResendOtpAsync(string email);
+
         Task ForgetPasswordAsync(string email);
         Task ResetPasswordAsync(string email, string token, string newPassword);
     }

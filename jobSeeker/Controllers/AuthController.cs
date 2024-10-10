@@ -133,6 +133,22 @@ namespace jobSeeker.Controllers
                 return StatusCode(500, new { Error = ex.Message });
             }
         }
+        [HttpPost("registration-resend-otp")]
+        public async Task<IActionResult> RegistrationResendOtp([FromQuery] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return BadRequest("Email is required.");
+
+            try
+            {
+                await _authService.RegistartionResendOtpAsync(email);
+                return Ok(new { Message = "New OTP has been sent to your email." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()

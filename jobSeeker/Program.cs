@@ -21,6 +21,9 @@ using Serilog;
 using jobSeeker.DataAccess.Services.TokenService;
 using jobSeeker.DataAccess.Data.Repository.IUserManagementRepo;
 using jobSeeker.DataAccess.Services.IUsermanagemetService;
+using jobSeeker.DataAccess.Data.Repository.IStoryRepo;
+using jobSeeker.DataAccess.Services.IStoryService;
+using jobSeeker.DataAccess.Services.StoryCleanupService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -105,13 +108,17 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IWheatherForcaset, WhetherForcaseExtended>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserManagementRepository, UserManagementRepository>();
+builder.Services.AddScoped<IStoryRepository, StoryRepository>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<OTPService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ITokenBlacklistServices, TokenBlacklistService>();
 builder.Services.AddScoped<IPostServices, PostServices>();
+builder.Services.AddScoped<IStoryServices, StoryServices>();
 builder.Services.AddScoped<IEmailservice, Emailservice>();
+builder.Services.AddScoped<StoryCleanupServices>();
+
 
 
 
