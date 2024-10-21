@@ -22,10 +22,23 @@ namespace jobSeeker.Models.Mapper
                 .ReverseMap();
 
             CreateMap<CreatePostDTO, Post>()
-             .ForMember(dest => dest.Images, opt => opt.Ignore()); 
+             .ForMember(dest => dest.Images, opt => opt.Ignore());
 
-            CreateMap<Comment, CommentDTO>().ReverseMap();
-            CreateMap<Like, LikeDTO>().ReverseMap();
+            CreateMap<UpdatePostDTO, Post>()
+          .ForMember(dest => dest.Images, opt => opt.Ignore()); 
+
+          CreateMap<Comment, CommentDTO>().ReverseMap();
+
+
+
+
+            CreateMap<Like, LikeDTO>()
+           .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))  // Map UserName from the related User entity
+           .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))  // Map UserId directly from the Like entity
+           .ReverseMap();
+
+
+            CreateMap<Like, LikeCreateDTO>().ReverseMap();
             CreateMap<Share, ShareDTO>().ReverseMap();
             CreateMap<PostImage, PostImageDTO>().ReverseMap();
 
@@ -37,6 +50,13 @@ namespace jobSeeker.Models.Mapper
             CreateMap<CreateStoryDTO, Story>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
+
+            CreateMap<Comment, CommentResponseDTO>()
+                        .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                        .ForMember(dest => dest.PostId, opt => opt.MapFrom(src => src.PostId))
+                        .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                        .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                        .ReverseMap();
         }
     }
 }

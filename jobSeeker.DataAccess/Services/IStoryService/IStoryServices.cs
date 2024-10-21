@@ -15,8 +15,12 @@ namespace jobSeeker.DataAccess.Services.IStoryService
         Task<IEnumerable<StoryDTO>> GetAllActiveStoriesAsync();
         Task<IEnumerable<StoryDTO>> GetStoriesByUserIdAsync(string userId);
         Task<bool> RemoveStoryAsync(int storyId); // Use int for storyId
+
         Task<StoryDTO> GetStoryByIdAsync(int storyId);
         Task<IEnumerable<StoryDTO>> GetAllStoriesAsync();
         Task MarkInactiveStoriesAsync();
+        Task<IEnumerable<StoryDTO>> GetStoriesFromOthersAsync(string userId);
+        Task<IEnumerable<StoryDTO>> GetArchivedStoriesAsync(string userId);
+
     }
 }

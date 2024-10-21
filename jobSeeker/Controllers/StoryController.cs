@@ -100,12 +100,38 @@ namespace jobSeeker.Controllers
             return NoContent(); 
         }
 
-       /* [HttpPost("mark-inactive")]
-        public async Task<IActionResult> MarkStoriesAsInactive()
+        [HttpGet("otherstories/{userId}")]
+        public async Task<IActionResult> GetStoriesFromOthers(string userId)
         {
-            await _storyService.MarkStoriesAsInactiveAsync();
-            _logger.LogInformation("Stories marked as inactive successfully.");
-            return Ok(ResponseHelper.Success("Stories marked as inactive"));
-        }*/
+            var stories = await _storyService.GetStoriesFromOthersAsync(userId);
+            int count = stories.Count();
+            _logger.LogInformation("Retrieved stories from other users excluding user: {UserId}, count: {Count}", userId, count);
+            return Ok(ResponseHelper.Success(stories));
+        }
+
+
+        [HttpGet("archived")]
+        public async Task<IActionResult> GetArchivedStories(string userId)
+        {
+            var archivedStories = await _storyService.GetArchivedStoriesAsync(userId);
+            int count = archivedStories.Count();
+            _logger.LogInformation("Retrieved archived stories, count: {Count}", count);
+
+            if (!archivedStories.Any())
+            {
+                return NotFound(ResponseHelper.Error("No archived stories found", HttpStatusCode.NotFound));
+            }
+
+            return Ok(ResponseHelper.Success(archivedStories));
+        }
+
+
+        /* [HttpPost("mark-inactive")]
+         public async Task<IActionResult> MarkStoriesAsInactive()
+         {
+             await _storyService.MarkStoriesAsInactiveAsync();
+             _logger.LogInformation("Stories marked as inactive successfully.");
+             return Ok(ResponseHelper.Success("Stories marked as inactive"));
+         }*/
     }
 }

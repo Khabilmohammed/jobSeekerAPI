@@ -59,6 +59,11 @@ namespace jobSeeker.DataAccess.Services.IStoryService
             return _mapper.Map<IEnumerable<StoryDTO>>(stories);
         }
 
+        public async Task<IEnumerable<StoryDTO>> GetArchivedStoriesAsync(string userId)
+        {
+            var stories = await _storyRepository.GetArchivedStoriesAsync(userId);
+            return _mapper.Map<IEnumerable<StoryDTO>>(stories);
+        }
 
         public async Task<bool> RemoveStoryAsync(int storyId)
         {
@@ -70,6 +75,13 @@ namespace jobSeeker.DataAccess.Services.IStoryService
             var story = await _storyRepository.GetStoryByIdAsync(storyId);
             return _mapper.Map<StoryDTO>(story);
         }
+
+        public async Task<IEnumerable<StoryDTO>> GetStoriesFromOthersAsync(string userId)
+        {
+            var stories = await _storyRepository.GetStoriesFromOthersAsync(userId);
+            return _mapper.Map<IEnumerable<StoryDTO>>(stories);
+        }
+
 
         public async Task MarkInactiveStoriesAsync()
         {

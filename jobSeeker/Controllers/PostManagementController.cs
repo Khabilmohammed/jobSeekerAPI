@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using jobSeeker.DataAccess.Services.ICommentService;
+using jobSeeker.DataAccess.Services.ILikeSerivce;
 using jobSeeker.DataAccess.Services.IPostService;
 using jobSeeker.Models;
 using jobSeeker.Models.DTO;
@@ -14,13 +16,19 @@ namespace jobSeeker.Controllers
     {
         private readonly IPostServices _postServices;
         private readonly IMapper _mapper;
-       
+        private readonly ILikeservice _likeservice;
+        private readonly ICommentservice _commentservice;
 
-        public PostManagementController(IPostServices postServices
-            ,IMapper mapper)
+
+        public PostManagementController(IPostServices postServices,
+            ILikeservice likeservice
+            ,IMapper mapper
+            ,ICommentservice commentservice)
         {
             _mapper = mapper;
-            _postServices = postServices;   
+            _postServices = postServices; 
+            _likeservice = likeservice;
+            _commentservice = commentservice;
         }
 
         [HttpPost("CreatePost")]
@@ -61,7 +69,6 @@ namespace jobSeeker.Controllers
             }
         }
 
-
         [HttpGet("GetPost/{postId}")]
         public async Task<IActionResult> GetPostById(int postId)
         {
@@ -71,8 +78,9 @@ namespace jobSeeker.Controllers
                 return NotFound(ResponseHelper.Error("Post not found."));
             }
 
-            var postDto = _mapper.Map<PostDTO>(post);
-            return Ok(ResponseHelper.Success(postDto));
+            var postDtos = _mapper.Map<PostDTO>(post);
+            postDtos.likeCount = await _likeservice.GetLikesCountForPostAsync(postId); // Add this line to get accurate like count
+            return Ok(ResponseHelper.Success(postDtos));
         }
 
         [HttpGet("GetAllPosts")]
@@ -80,12 +88,18 @@ namespace jobSeeker.Controllers
         {
             var posts = await _postServices.GetAllPostsAsync();
             var postDtos = _mapper.Map<IEnumerable<PostDTO>>(posts);
+
+            foreach (var postDto in postDtos)
+            {
+                postDto.likeCount = await _likeservice.GetLikesCountForPostAsync(postDto.PostId);
+            }
+
             return Ok(ResponseHelper.Success(postDtos));
         }
 
 
         [HttpPut("UpdatePost/{postId}")]
-        public async Task<IActionResult> UpdatePost(int postId, [FromBody] PostDTO postDto)
+        public async Task<IActionResult> UpdatePost(int postId, [FromBody] UpdatePostDTO postDto)
         {
             if (!ModelState.IsValid)
             {
@@ -101,7 +115,7 @@ namespace jobSeeker.Controllers
             _mapper.Map(postDto, postToUpdate);
 
             var updated = await _postServices.UpdatePostAsync(postToUpdate);
-            if (updated!=null)
+            if (updated==null)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError,
                     ResponseHelper.Error("Error updating the post."));
@@ -110,6 +124,35 @@ namespace jobSeeker.Controllers
             return Ok(ResponseHelper.Success("Post updated successfully."));
         }
 
+
+        [HttpGet("GetPostsByUser/{userId}")]
+        public async Task<IActionResult> GetPostsByUserId(string userId)
+        {
+            try
+            {
+                var posts = await _postServices.GetPostsByUserIdAsync(userId);
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound(ResponseHelper.Error("No posts found for this user."));
+                }
+
+                var postDtos = _mapper.Map<IEnumerable<PostDTO>>(posts);
+
+                // Optionally, calculate like count for each post
+                foreach (var postDto in postDtos)
+                {
+                    postDto.likeCount = await _likeservice.GetLikesCountForPostAsync(postDto.PostId);
+                    postDto.commentCount = await _commentservice.GetCommentCountForPostAsync(postDto.PostId); // Fetch comment count
+                }
+
+                return Ok(ResponseHelper.Success(postDtos));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError,
+                    ResponseHelper.Error("An unexpected error occurred: " + ex.Message));
+            }
+        }
 
 
 

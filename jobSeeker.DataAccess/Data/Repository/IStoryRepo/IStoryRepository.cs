@@ -11,13 +11,16 @@ namespace jobSeeker.DataAccess.Data.Repository.IStoryRepo
     public interface IStoryRepository
     {
         Task<Story> CreateStoryAsync(Story story);
-        Task<IEnumerable<Story>> GetActiveStoriesAsync(); 
+        Task<IEnumerable<Story>> GetActiveStoriesAsync();
         Task<IEnumerable<StoryDTO>> GetStoriesByUserIdAsync(string userId);
-        Task<bool> DeleteStoryAsync(int storyId); 
+        Task<bool> DeleteStoryAsync(int storyId);
         Task<Story> GetStoryByIdAsync(int storyId);
         Task<IEnumerable<Story>> GetAllStoriesAsync();
         Task<IEnumerable<Story>> GetInactiveStoriesAsync(DateTime threshold);
         Task SaveChangesAsync();
+        Task<IEnumerable<Story>> GetStoriesFromOthersAsync(string userId);
+
+        Task<IEnumerable<StoryDTO>> GetArchivedStoriesAsync(string userId);
     }
 
 }

@@ -62,7 +62,17 @@ namespace jobSeeker.DataAccess.Services.IPostService
                 .Include(p => p.Images)
                 .ToListAsync();
         }
-
+        public async Task<IEnumerable<Post>> GetPostsByUserIdAsync(string userId)
+        {
+            return await _db.Posts.
+                Where(p => p.UserId == userId)
+                 .Include(p => p.User)
+                .Include(p => p.Comments)
+                .Include(p => p.Likes)
+                .Include(p => p.Shares)
+                .Include(p => p.Images)
+                .ToListAsync();
+        }
 
         public async Task<Post> UpdatePostAsync(Post post)
         {
@@ -73,12 +83,18 @@ namespace jobSeeker.DataAccess.Services.IPostService
 
         public async Task<bool> DeletePostAsync(int postId)
         {
-            var post = await _db.Posts.Include(p => p.Images).FirstOrDefaultAsync(p => p.PostId == postId);
+                    var post = await _db.Posts
+               .Include(p => p.Images)
+               .Include(p => p.Comments)
+               .Include(p => p.Likes)
+               .FirstOrDefaultAsync(p => p.PostId == postId);
+           
             if (post != null)
             {
                 // Delete all images associated with the post
                 _db.PostImages.RemoveRange(post.Images);
-
+                _db.Likes.RemoveRange(post.Likes);
+                _db.Comments.RemoveRange(post.Comments);
                 // Delete the post itself
                 _db.Posts.Remove(post);
 

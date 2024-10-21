@@ -23,7 +23,7 @@ namespace jobSeeker.Models
         [Required(ErrorMessage = "Content is required.")]
         [StringLength(1000, ErrorMessage = "Content cannot be longer than 1000 characters.")]
         public string Content { get; set; } // Comment content
-        public DateTime CreatedAt { get; set; } = DateTime.Now; // Automatically set the creation time
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [ForeignKey("PostId")]
         public Post Post { get; set; }

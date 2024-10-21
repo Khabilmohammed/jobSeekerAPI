@@ -16,6 +16,7 @@ namespace jobSeeker.DataAccess.Services.IPostService
         Task<IEnumerable<Post>> GetAllPostsAsync();
         Task<Post> UpdatePostAsync(Post post);
         Task<bool> DeletePostAsync(int postId);
+        Task<IEnumerable<Post>> GetPostsByUserIdAsync(string userId);
 
 
         //comment related method

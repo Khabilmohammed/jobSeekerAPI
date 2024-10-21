@@ -58,9 +58,11 @@ namespace jobSeeker.DataAccess.Data.Repository.IStoryRepo
         {
             try
             {
+                DateTime last24Hours = DateTime.UtcNow.AddHours(-24);
+
                 return await _context.Stories
-                    .Include(s => s.User) // Include the User entity
-                    .Where(s => s.UserId == userId)
+                    .Include(s => s.User) 
+                    .Where(s => s.UserId == userId &&  s.CreatedAt >= last24Hours) // Filter for active stories within 24 hours
                     .Select(s => new StoryDTO
                     {
                         StoryId = s.StoryId,
@@ -68,7 +70,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IStoryRepo
                         ImageUrl = s.ImageUrl,
                         CreatedAt = s.CreatedAt,
                         IsActive = s.IsActive,
-                        UserName = s.User.UserName // Map UserName directly here
+                        UserName = s.User.UserName 
                     })
                     .ToListAsync();
             }
@@ -77,6 +79,35 @@ namespace jobSeeker.DataAccess.Data.Repository.IStoryRepo
                 throw new Exception($"Error fetching stories for user {userId}", ex);
             }
         }
+
+        public async Task<IEnumerable<StoryDTO>> GetArchivedStoriesAsync(string userId)
+        {
+            try
+            {
+                DateTime expirationThreshold = DateTime.UtcNow.AddHours(-24);
+
+                // Fetch stories older than 24 hours (i.e., archived/expired stories)
+                return await _context.Stories
+                    .Include(s => s.User)
+                    .Where(s => s.UserId == userId && s.CreatedAt < expirationThreshold) // Archived stories
+                    .Select(s => new StoryDTO
+                    {
+                        StoryId = s.StoryId,
+                        UserId = s.UserId,
+                        ImageUrl = s.ImageUrl,
+                        CreatedAt = s.CreatedAt,
+                        IsActive = s.IsActive,
+                        UserName = s.User.UserName
+                    })
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error fetching archived stories for user {userId}", ex);
+            }
+        }
+
+
 
         public async Task<bool> DeleteStoryAsync(int storyId)
         {
@@ -115,6 +146,16 @@ namespace jobSeeker.DataAccess.Data.Repository.IStoryRepo
                 .Where(s => s.CreatedAt < threshold && s.IsActive)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Story>> GetStoriesFromOthersAsync(string userId)
+        {
+            return await _context.Stories
+                .Include(s => s.User)
+                .Where(s => s.UserId != userId && s.CreatedAt >= DateTime.UtcNow.AddHours(-24)) // Exclude user's own stories and only active stories
+                .ToListAsync();
+          
+        }
+
 
         public async Task SaveChangesAsync()
         {

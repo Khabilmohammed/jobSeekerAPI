@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace jobSeeker.Models.DTO
 {
-    public class LikeDTO
+    public class CommentResponseDTO
     {
+        public int CommentId { get; set; }  
         public int PostId { get; set; }
-        public string UserId { get; set; }
         public string UserName { get; set; }
-        public int LikeId { get; set; }
+        public string Content { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

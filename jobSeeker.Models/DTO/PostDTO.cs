@@ -16,7 +16,8 @@ namespace jobSeeker.Models.DTO
         public ICollection<LikeDTO> Likes { get; set; }
         public ICollection<ShareDTO> Shares { get; set; }
         public ICollection<PostImageDTO> Images { get; set; }
-
+        public int likeCount { get; set; }
+        public int commentCount { get; set; }
 
         public string UserName { get; set; }
         public string Email { get; set; }

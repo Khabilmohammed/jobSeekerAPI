@@ -24,6 +24,10 @@ using jobSeeker.DataAccess.Services.IUsermanagemetService;
 using jobSeeker.DataAccess.Data.Repository.IStoryRepo;
 using jobSeeker.DataAccess.Services.IStoryService;
 using jobSeeker.DataAccess.Services.StoryCleanupService;
+using jobSeeker.DataAccess.Data.Repository.ILikeRepo;
+using jobSeeker.DataAccess.Services.ILikeSerivce;
+using jobSeeker.DataAccess.Data.Repository.ICommentRepo;
+using jobSeeker.DataAccess.Services.ICommentService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -117,6 +121,10 @@ builder.Services.AddScoped<ITokenBlacklistServices, TokenBlacklistService>();
 builder.Services.AddScoped<IPostServices, PostServices>();
 builder.Services.AddScoped<IStoryServices, StoryServices>();
 builder.Services.AddScoped<IEmailservice, Emailservice>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ILikeservice, LikeService>();
+builder.Services.AddScoped<ICommentservice, Commentservice>();
 builder.Services.AddScoped<StoryCleanupServices>();
 
 
