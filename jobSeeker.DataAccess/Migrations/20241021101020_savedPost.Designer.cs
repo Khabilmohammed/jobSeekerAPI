@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using jobSeeker.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using jobSeeker.DataAccess.Data;
 namespace jobSeeker.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241021101020_savedPost")]
+    partial class savedPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,36 +284,6 @@ namespace jobSeeker.DataAccess.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("jobSeeker.Models.Experience", b =>
-                {
-                    b.Property<int>("ExperienceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExperienceId"));
-
-                    b.Property<int?>("EndYear")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsCurrent")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("StartYear")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ExperienceId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Experiences");
-                });
-
             modelBuilder.Entity("jobSeeker.Models.Like", b =>
                 {
                     b.Property<int>("LikeId")
@@ -564,15 +537,6 @@ namespace jobSeeker.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("jobSeeker.Models.Experience", b =>
-                {
-                    b.HasOne("jobSeeker.Models.ApplicationUser", "User")
-                        .WithMany("Experiences")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("jobSeeker.Models.Like", b =>
                 {
                     b.HasOne("jobSeeker.Models.Post", "Post")
@@ -659,11 +623,6 @@ namespace jobSeeker.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("jobSeeker.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("Experiences");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Post", b =>

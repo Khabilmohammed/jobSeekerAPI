@@ -57,6 +57,17 @@ namespace jobSeeker.Models.Mapper
                         .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
                         .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
                         .ReverseMap();
+
+            CreateMap<SavedPost, SavePostDTO>()
+           .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName)) // Map UserName
+           .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.Post)) // Map Post
+           .ReverseMap();
+
+            CreateMap<Experience, ExperienceDto>()
+          .ReverseMap();
+
+            CreateMap<CreateExperienceDto, Experience>()
+            .ForMember(dest => dest.UserId, opt => opt.Ignore());
         }
     }
 }

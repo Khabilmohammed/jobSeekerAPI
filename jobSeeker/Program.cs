@@ -28,6 +28,10 @@ using jobSeeker.DataAccess.Data.Repository.ILikeRepo;
 using jobSeeker.DataAccess.Services.ILikeSerivce;
 using jobSeeker.DataAccess.Data.Repository.ICommentRepo;
 using jobSeeker.DataAccess.Services.ICommentService;
+using jobSeeker.DataAccess.Data.Repository.ISavedRepo;
+using jobSeeker.DataAccess.Services.ISavedPostService;
+using jobSeeker.DataAccess.Data.Repository.IExpericeRepo;
+using jobSeeker.DataAccess.Services.IExperienceService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -126,7 +130,10 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ILikeservice, LikeService>();
 builder.Services.AddScoped<ICommentservice, Commentservice>();
 builder.Services.AddScoped<StoryCleanupServices>();
-
+builder.Services.AddScoped<ISavedPostRepository, SavedPostRepository>();
+builder.Services.AddScoped<ISavedPostservices, SavedPostservice>();
+builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
+builder.Services.AddScoped<IExperienceServices, ExperienceService>();
 
 
 

@@ -44,5 +44,7 @@ namespace jobSeeker.Models
 
         [NotMapped]  // This prevents this property from being added to the database
         public string Role { get; set; }
+
+        public List<Experience> Experiences { get; set; } = new List<Experience>();
     }
 }

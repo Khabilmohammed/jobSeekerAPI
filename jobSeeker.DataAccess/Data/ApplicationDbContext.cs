@@ -50,9 +50,20 @@ namespace jobSeeker.DataAccess.Data
            .WithMany() 
            .HasForeignKey(s => s.UserId)
            .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<SavedPost>()
+                .HasOne(sp => sp.User)
+                .WithMany()
+                .HasForeignKey(sp => sp.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Experience>()
+            .HasOne(e => e.User)
+            .WithMany(u => u.Experiences)
+            .HasForeignKey(e => e.UserId);
         }
 
-
+        
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<UserOTP> UserOTPs { get; set; }
         public DbSet<Post> Posts { get; set; }
@@ -61,5 +72,7 @@ namespace jobSeeker.DataAccess.Data
         public DbSet<PostImage> PostImages { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Story> Stories { get; set; }
+        public DbSet<SavedPost> SavedPosts { get; set; }
+        public DbSet<Experience> Experiences { get; set; }
     }
 }

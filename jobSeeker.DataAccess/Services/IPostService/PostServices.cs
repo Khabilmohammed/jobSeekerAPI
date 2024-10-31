@@ -83,7 +83,7 @@ namespace jobSeeker.DataAccess.Services.IPostService
 
         public async Task<bool> DeletePostAsync(int postId)
         {
-                    var post = await _db.Posts
+                var post = await _db.Posts
                .Include(p => p.Images)
                .Include(p => p.Comments)
                .Include(p => p.Likes)

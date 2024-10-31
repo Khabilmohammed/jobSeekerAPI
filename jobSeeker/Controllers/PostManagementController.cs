@@ -92,6 +92,7 @@ namespace jobSeeker.Controllers
             foreach (var postDto in postDtos)
             {
                 postDto.likeCount = await _likeservice.GetLikesCountForPostAsync(postDto.PostId);
+                postDto.commentCount = await _commentservice.GetCommentCountForPostAsync(postDto.PostId);
             }
 
             return Ok(ResponseHelper.Success(postDtos));
