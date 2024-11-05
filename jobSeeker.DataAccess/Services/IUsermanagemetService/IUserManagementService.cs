@@ -17,5 +17,6 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
         Task<List<ApplicationUser>> GetUsersByRoleAsync(string role);
         Task<bool> DeactivateUserAsync(string userId);
         Task<bool> ChangeUserRoleAsync(string userId, string newRole);
+        Task<bool> UserExistsAsync(string userId);
     }
 }

@@ -32,6 +32,10 @@ using jobSeeker.DataAccess.Data.Repository.ISavedRepo;
 using jobSeeker.DataAccess.Services.ISavedPostService;
 using jobSeeker.DataAccess.Data.Repository.IExpericeRepo;
 using jobSeeker.DataAccess.Services.IExperienceService;
+using jobSeeker.DataAccess.Data.Repository.CertificateRepo;
+using jobSeeker.DataAccess.Services.CertificateService;
+using jobSeeker.DataAccess.Data.Repository.IEducationRepo;
+using jobSeeker.DataAccess.Services.IEducationService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -134,7 +138,10 @@ builder.Services.AddScoped<ISavedPostRepository, SavedPostRepository>();
 builder.Services.AddScoped<ISavedPostservices, SavedPostservice>();
 builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
 builder.Services.AddScoped<IExperienceServices, ExperienceService>();
-
+builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
+builder.Services.AddScoped<ICertificateServices, CertificateServices>();
+builder.Services.AddScoped<IEducationRepository, EducationRepository>();
+builder.Services.AddScoped<IEducationServices, EducationServices>();
 
 
 builder.Services.AddAutoMapper(typeof(MappingProfile)); 

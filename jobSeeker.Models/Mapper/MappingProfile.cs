@@ -68,6 +68,14 @@ namespace jobSeeker.Models.Mapper
 
             CreateMap<CreateExperienceDto, Experience>()
             .ForMember(dest => dest.UserId, opt => opt.Ignore());
+
+            CreateMap<Certificate, CertificateDto>().ReverseMap();
+            CreateMap<CreateCertificateDto, Certificate>()
+                .ForMember(dest => dest.UserId, opt => opt.Ignore());
+
+            CreateMap<Education, CreateEducationDTO>().ReverseMap();
+            CreateMap<Education, EducationResponseDTO>().ReverseMap()
+                .ForMember(dest => dest.UserId, opt => opt.Ignore());
         }
     }
 }

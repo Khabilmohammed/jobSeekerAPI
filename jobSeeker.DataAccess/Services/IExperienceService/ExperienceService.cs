@@ -43,7 +43,7 @@ namespace jobSeeker.DataAccess.Services.IExperienceService
         public async Task<ExperienceDto> UpdateExperienceAsync(int id, CreateExperienceDto createExperienceDto)
         {
             var experience = _mapper.Map<Experience>(createExperienceDto);
-            experience.ExperienceId = id; // Ensure the correct ID is set
+            experience.ExperienceId = id; 
             await _experienceRepository.UpdateExperienceAsync(experience);
             return _mapper.Map<ExperienceDto>(experience);
         }

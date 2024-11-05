@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using jobSeeker.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using jobSeeker.DataAccess.Data;
 namespace jobSeeker.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241101220441_certificateTableUpdate")]
+    partial class certificateTableUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,39 +317,6 @@ namespace jobSeeker.DataAccess.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("jobSeeker.Models.Education", b =>
-                {
-                    b.Property<int>("EducationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EducationId"));
-
-                    b.Property<string>("Degree")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EndDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FieldOfStudy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Institution")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StartDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("EducationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Educations");
-                });
-
             modelBuilder.Entity("jobSeeker.Models.Experience", b =>
                 {
                     b.Property<int>("ExperienceId")
@@ -639,15 +609,6 @@ namespace jobSeeker.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("jobSeeker.Models.Education", b =>
-                {
-                    b.HasOne("jobSeeker.Models.ApplicationUser", "User")
-                        .WithMany("Educations")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("jobSeeker.Models.Experience", b =>
                 {
                     b.HasOne("jobSeeker.Models.ApplicationUser", "User")
@@ -748,8 +709,6 @@ namespace jobSeeker.DataAccess.Migrations
             modelBuilder.Entity("jobSeeker.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Certificates");
-
-                    b.Navigation("Educations");
 
                     b.Navigation("Experiences");
                 });

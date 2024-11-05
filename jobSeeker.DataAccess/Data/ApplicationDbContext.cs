@@ -61,6 +61,16 @@ namespace jobSeeker.DataAccess.Data
             .HasOne(e => e.User)
             .WithMany(u => u.Experiences)
             .HasForeignKey(e => e.UserId);
+
+            modelBuilder.Entity<Certificate>()
+       .HasOne(c => c.User)
+       .WithMany(u => u.Certificates)
+       .HasForeignKey(c => c.UserId);
+
+            modelBuilder.Entity<Education>()
+       .HasOne(e => e.User)
+       .WithMany(u => u.Educations)
+       .HasForeignKey(e => e.UserId);
         }
 
         
@@ -74,5 +84,8 @@ namespace jobSeeker.DataAccess.Data
         public DbSet<Story> Stories { get; set; }
         public DbSet<SavedPost> SavedPosts { get; set; }
         public DbSet<Experience> Experiences { get; set; }
+        public DbSet<Certificate> Certificates { get; set; }
+        public DbSet<Education> Educations { get; set; }
+
     }
 }

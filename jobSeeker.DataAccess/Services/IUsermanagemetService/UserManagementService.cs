@@ -71,5 +71,10 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
             // Call the repository method to handle role assignment
             return await _userManagementRepository.AssignRoleAsync(userId, newRole);
         }
+
+        public async Task<bool> UserExistsAsync(string userId)
+        {
+            return await _userManagementRepository.UserExistsAsync(userId); 
+        }
     }
 }

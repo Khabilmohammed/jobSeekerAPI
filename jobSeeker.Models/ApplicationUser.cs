@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -46,5 +47,7 @@ namespace jobSeeker.Models
         public string Role { get; set; }
 
         public List<Experience> Experiences { get; set; } = new List<Experience>();
+        public List<Certificate> Certificates { get; set; } = new List<Certificate>();
+        public List<Education> Educations { get; set; }= new List<Education>();
     }
 }

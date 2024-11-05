@@ -141,7 +141,7 @@ namespace jobSeeker.Controllers
                 }
 
                 _logger.LogInformation("Experience deleted successfully: {ExperienceId}", id);
-                return NoContent();
+                return Ok(ResponseHelper.Success("Experience deleted successfully."));
             }
             catch (Exception ex)
             {
