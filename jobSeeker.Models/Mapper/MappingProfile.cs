@@ -90,7 +90,8 @@ namespace jobSeeker.Models.Mapper
             CreateMap<UpdateCompanyDTO, Company>()
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ReverseMap();
-
+            CreateMap<JobPosting, JobPostingDTO>().ReverseMap();
+            CreateMap<CreateJobPostingDTO, JobPosting>();
 
         }
     }

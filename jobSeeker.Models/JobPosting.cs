@@ -16,22 +16,22 @@ namespace jobSeeker.Models
         public int CompanyId { get; set; }
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(200)]
         public string Title { get; set; }
 
         [Required]
         public string Description { get; set; }
 
-        [MaxLength(50)]
+        [MaxLength(200)]
         public string Location { get; set; }
 
-        [MaxLength(100)]
+        [MaxLength(1000)]
         public string ExperienceRequired { get; set; }
 
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string Skills { get; set; }
 
-        [MaxLength(50)]
+        [MaxLength(500)]
         public string SalaryRange { get; set; }
 
         [Required]
