@@ -19,6 +19,7 @@ using System.Net;
 using Microsoft.EntityFrameworkCore;
 using jobSeeker.DataAccess.Services.TokenService;
 using System.Web;
+using jobSeeker.DataAccess.Services.ICompanyService;
 
 namespace jobSeeker.DataAccess.Services.IUserRepositoryService
 {
@@ -27,6 +28,7 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
         private readonly IUserRepository _userRepository;
         private readonly OTPService _otpService;
         private readonly IEmailservice _emailService;
+        private readonly ICompanyServices _companyService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenBlacklistServices _tokenBlacklistService;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -43,7 +45,8 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
                            IConfiguration configuration,
                            ITokenBlacklistServices tokenBlacklistService,
                            IPasswordHasher<ApplicationUser> passwordHasher,
-                           ITokenService tokenService
+                           ITokenService tokenService,
+                           ICompanyServices companyService
                              )
         {
             _userRepository = userRepository;
@@ -55,6 +58,7 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
             _tokenBlacklistService = tokenBlacklistService;
             _passwordHasher = passwordHasher;
             _tokenService=tokenService;
+            _companyService = companyService;
         }
 
         public async Task RegisterAsync(RegisterRequestDTO model)
@@ -154,7 +158,17 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
 
             await EnsureRolesExist();
             await _userManager.AddToRoleAsync(newUser, registrationDetails.Role);
-
+            if(registrationDetails.Role== "company")
+            {
+                var company = new Company
+                {
+                    UserId = newUser.Id,
+                    IsCompleted = false,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                await _companyService.AddAsync(company);
+            }
             _temporaryStorage.Remove(model.Email);
             return true;
         }

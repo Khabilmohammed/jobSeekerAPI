@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace jobSeeker.Models
 {
@@ -49,5 +50,7 @@ namespace jobSeeker.Models
         public List<Experience> Experiences { get; set; } = new List<Experience>();
         public List<Certificate> Certificates { get; set; } = new List<Certificate>();
         public List<Education> Educations { get; set; }= new List<Education>();
+
+        public Company Company { get; set; }
     }
 }

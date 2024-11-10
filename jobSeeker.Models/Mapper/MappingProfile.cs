@@ -76,6 +76,22 @@ namespace jobSeeker.Models.Mapper
             CreateMap<Education, CreateEducationDTO>().ReverseMap();
             CreateMap<Education, EducationResponseDTO>().ReverseMap()
                 .ForMember(dest => dest.UserId, opt => opt.Ignore());
+
+            // Company and CompanyDTO mapping
+            CreateMap<Company, CompanyDTO>().ReverseMap();
+
+            // CreateCompanyDTO to Company
+            CreateMap<CreateCompanyDTO, Company>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ReverseMap();
+
+            // UpdateCompanyDTO to Company
+            CreateMap<UpdateCompanyDTO, Company>()
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ReverseMap();
+
+
         }
     }
 }

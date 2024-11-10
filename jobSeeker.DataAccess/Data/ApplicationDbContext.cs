@@ -71,6 +71,18 @@ namespace jobSeeker.DataAccess.Data
        .HasOne(e => e.User)
        .WithMany(u => u.Educations)
        .HasForeignKey(e => e.UserId);
+
+            modelBuilder.Entity<Company>()
+        .HasOne(c => c.User)
+        .WithOne(u => u.Company)
+        .HasForeignKey<Company>(c => c.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<JobPosting>()
+    .HasOne<Company>()
+    .WithMany()
+    .HasForeignKey(jp => jp.CompanyId)
+    .OnDelete(DeleteBehavior.Cascade);
         }
 
         
@@ -86,6 +98,8 @@ namespace jobSeeker.DataAccess.Data
         public DbSet<Experience> Experiences { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
         public DbSet<Education> Educations { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<JobPosting> JobPostings { get; set; }
 
     }
 }
