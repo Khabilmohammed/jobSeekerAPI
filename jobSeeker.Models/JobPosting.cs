@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace jobSeeker.Models
 
         [Required]
         public int CompanyId { get; set; }
+
 
         [Required]
         [MaxLength(200)]
@@ -40,9 +42,11 @@ namespace jobSeeker.Models
         public DateTime? ExpiryDate { get; set; }
 
         [MaxLength(50)]
-        public string JobType { get; set; } // Full-time, Part-time, Contract
+        public string JobType { get; set; } 
 
         public bool IsActive { get; set; } = true;
-      
+        public ICollection<Payment> Payments { get; set; }
+
+    
     }
 }

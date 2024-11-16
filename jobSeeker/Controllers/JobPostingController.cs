@@ -1,4 +1,5 @@
 ﻿using jobSeeker.DataAccess.Services.IJobPostingService;
+using jobSeeker.DataAccess.Services.PymentService;
 using jobSeeker.Models;
 using jobSeeker.Models.DTO;
 using Microsoft.AspNetCore.Http;
@@ -18,34 +19,36 @@ namespace jobSeeker.Controllers
             _service = service;
             _logger = logger;
         }
+
         [HttpPost("create")]
-        public async Task<IActionResult> CreateJobPosting([FromBody] CreateJobPostingDTO createJobPostingDTO)
+        public async Task<IActionResult> CreateJobPosting([FromBody] CreateJobPostingDTO createDTO)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogWarning("Invalid model state for creating job posting.");
+                    _logger.LogWarning("Invalid model state for creating a job posting.");
                     return BadRequest(ResponseHelper.Error("Invalid input data", HttpStatusCode.BadRequest));
                 }
 
                 _logger.LogInformation("Creating a new job posting.");
-                var createdJobPosting = await _service.CreateJobPostingAsync(createJobPostingDTO);
 
-                if (createdJobPosting == null)
+                // Call the service to create a new job posting
+                var createdJob = await _service.CreateJobPostingAsync(createDTO);
+
+                // Check if the job posting was successfully created
+                if (createdJob == null)
                 {
-                    _logger.LogError("Failed to create job posting.");
-                    return StatusCode(StatusCodes.Status500InternalServerError,
-                        ResponseHelper.Error("Failed to create job posting", HttpStatusCode.InternalServerError));
+                    _logger.LogWarning("Failed to create the job posting.");
+                    return BadRequest(ResponseHelper.Error("Job posting creation failed", HttpStatusCode.BadRequest));
                 }
 
-                _logger.LogInformation("Job posting successfully created with ID: {JobId}", createdJobPosting.JobId);
-                return CreatedAtAction(nameof(GetJobPostingById), new { jobId = createdJobPosting.JobId },
-                    ResponseHelper.Success(createdJobPosting));
+                _logger.LogInformation("Job posting created successfully with ID: {JobId}", createdJob.JobId);
+                return CreatedAtAction(nameof(GetJobPostingById), new { jobId = createdJob.JobId }, ResponseHelper.Success(createdJob));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating a job posting.");
+                _logger.LogError(ex, "An error occurred while creating a new job posting.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ResponseHelper.Error("An unexpected error occurred", HttpStatusCode.InternalServerError));
             }
@@ -124,7 +127,7 @@ namespace jobSeeker.Controllers
         }
 
         [HttpPut("{jobId}/update")]
-        public async Task<IActionResult> UpdateJobPosting(int jobId, [FromBody] CreateJobPostingDTO updateDTO)
+        public async Task<IActionResult> UpdateJobPosting(int jobId, [FromBody] UpdateJobPostingDTO updateDTO)
         {
             try
             {

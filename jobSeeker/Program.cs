@@ -40,6 +40,7 @@ using jobSeeker.DataAccess.Data.Repository.ICompanyRepo;
 using jobSeeker.DataAccess.Services.ICompanyService;
 using jobSeeker.DataAccess.Data.Repository.IJobPostingRepo;
 using jobSeeker.DataAccess.Services.IJobPostingService;
+using jobSeeker.DataAccess.Services.PymentService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -127,6 +128,7 @@ builder.Services.AddScoped<IUserManagementRepository, UserManagementRepository>(
 builder.Services.AddScoped<IStoryRepository, StoryRepository>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<OTPService>();
+builder.Services.AddScoped<PaymentServices>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ITokenBlacklistServices, TokenBlacklistService>();

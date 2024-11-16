@@ -83,6 +83,13 @@ namespace jobSeeker.DataAccess.Data
     .WithMany()
     .HasForeignKey(jp => jp.CompanyId)
     .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Payment>()
+    .ToTable("Payments")
+    .HasOne(p => p.JobPosting)
+    .WithMany()
+    .HasForeignKey(p => p.JobId)
+    .OnDelete(DeleteBehavior.Cascade);
         }
 
         
@@ -100,6 +107,7 @@ namespace jobSeeker.DataAccess.Data
         public DbSet<Education> Educations { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<JobPosting> JobPostings { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
     }
 }

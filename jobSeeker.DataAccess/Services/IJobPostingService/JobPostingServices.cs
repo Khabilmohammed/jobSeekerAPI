@@ -42,7 +42,7 @@ namespace jobSeeker.DataAccess.Services.IJobPostingService
             return _mapper.Map<IEnumerable<JobPostingDTO>>(jobPostings);
         }
 
-        public async Task<bool> UpdateJobPostingAsync(int jobId, CreateJobPostingDTO createJobPostingDTO)
+        public async Task<bool> UpdateJobPostingAsync(int jobId, UpdateJobPostingDTO createJobPostingDTO)
         {
             var jobPosting = await _repository.GetJobPostingByIdAsync(jobId);
             if (jobPosting == null) return false;

@@ -31,7 +31,10 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
         }
         public async Task<IEnumerable<JobPosting>> GetCompanyJobPostingsAsync(int companyId)
         {
-            return await _context.JobPostings.Where(jp => jp.CompanyId == companyId).ToListAsync();
+            return await _context.JobPostings
+                .Where(jp => jp.CompanyId == companyId)
+                .OrderByDescending(jp => jp.JobId) 
+                .ToListAsync();
         }
         public async Task<bool> UpdateJobPostingAsync(JobPosting jobPosting)
         {

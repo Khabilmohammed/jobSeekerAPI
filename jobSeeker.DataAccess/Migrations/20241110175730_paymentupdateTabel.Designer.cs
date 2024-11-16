@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using jobSeeker.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using jobSeeker.DataAccess.Data;
 namespace jobSeeker.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241110175730_paymentupdateTabel")]
+    partial class paymentupdateTabel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -279,7 +282,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Certificates", (string)null);
+                    b.ToTable("Certificates");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Comment", b =>
@@ -311,7 +314,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Company", b =>
@@ -369,7 +372,7 @@ namespace jobSeeker.DataAccess.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Education", b =>
@@ -402,7 +405,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Educations", (string)null);
+                    b.ToTable("Educations");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Experience", b =>
@@ -432,7 +435,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Experiences", (string)null);
+                    b.ToTable("Experiences");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.JobPosting", b =>
@@ -488,7 +491,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("JobPostings", (string)null);
+                    b.ToTable("JobPostings");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Like", b =>
@@ -515,7 +518,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Likes", (string)null);
+                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Payment", b =>
@@ -607,7 +610,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostImages", (string)null);
+                    b.ToTable("PostImages");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.SavedPost", b =>
@@ -630,7 +633,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SavedPosts", (string)null);
+                    b.ToTable("SavedPosts");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Share", b =>
@@ -657,7 +660,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Shares", (string)null);
+                    b.ToTable("Shares");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.Story", b =>
@@ -687,7 +690,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Stories", (string)null);
+                    b.ToTable("Stories");
                 });
 
             modelBuilder.Entity("jobSeeker.Models.UserOTP", b =>
@@ -715,7 +718,7 @@ namespace jobSeeker.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserOTPs", (string)null);
+                    b.ToTable("UserOTPs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
