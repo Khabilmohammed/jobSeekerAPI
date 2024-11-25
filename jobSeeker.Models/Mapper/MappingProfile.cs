@@ -95,6 +95,19 @@ namespace jobSeeker.Models.Mapper
             CreateMap<UpdateJobPostingDTO, JobPosting>()
     .ForMember(dest => dest.CompanyId, opt => opt.Ignore());
 
+
+            CreateMap<JobApplication, JobApplicationDTO>()
+         .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.JobPosting.Title))
+         .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.JobPosting.Company.Name))
+         .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+         .ForMember(dest => dest.ExpectedSalary, opt => opt.MapFrom(src => src.ExpectedSalary))
+         .ForMember(dest => dest.ApplicationDate, opt => opt.MapFrom(src => src.ApplicationDate))
+         .ReverseMap();
+
+            CreateMap<CreateJobApplicationDTO, JobApplication>()
+                .ForMember(dest => dest.ApplicationDate, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Applied"))
+                .ReverseMap();
         }
     }
 }

@@ -60,6 +60,7 @@ namespace jobSeeker.DataAccess.Services.IPostService
                 .Include(p => p.Likes)
                 .Include(p => p.Shares)
                 .Include(p => p.Images)
+                .OrderByDescending(p => p.PostId)
                 .ToListAsync();
         }
         public async Task<IEnumerable<Post>> GetPostsByUserIdAsync(string userId)
@@ -71,6 +72,7 @@ namespace jobSeeker.DataAccess.Services.IPostService
                 .Include(p => p.Likes)
                 .Include(p => p.Shares)
                 .Include(p => p.Images)
+                .OrderByDescending(p => p.PostId)
                 .ToListAsync();
         }
 

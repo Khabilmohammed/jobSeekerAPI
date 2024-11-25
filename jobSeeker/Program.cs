@@ -41,6 +41,8 @@ using jobSeeker.DataAccess.Services.ICompanyService;
 using jobSeeker.DataAccess.Data.Repository.IJobPostingRepo;
 using jobSeeker.DataAccess.Services.IJobPostingService;
 using jobSeeker.DataAccess.Services.PymentService;
+using jobSeeker.DataAccess.Data.Repository.IJobApplicationRepo;
+using jobSeeker.DataAccess.Services.IJobApplicationService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -152,6 +154,9 @@ builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICompanyServices, CompanyServices>();
 builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 builder.Services.AddScoped<IJobPostingServices, JobPostingServices>();
+builder.Services.AddScoped<IJobApplicationRepository,JobApplicationRepository >();
+builder.Services.AddScoped<IJobApplicationServices, JobApplicationServices>();
+
 
 
 builder.Services.AddAutoMapper(typeof(MappingProfile)); 

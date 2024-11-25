@@ -90,6 +90,19 @@ namespace jobSeeker.DataAccess.Data
     .WithMany()
     .HasForeignKey(p => p.JobId)
     .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<JobApplication>()
+           .ToTable("JobApplications")
+           .HasOne(ja => ja.JobPosting)
+           .WithMany()
+           .HasForeignKey(ja => ja.JobPostingId)
+           .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasOne(ja => ja.User)
+                .WithMany()
+                .HasForeignKey(ja => ja.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         
@@ -108,6 +121,6 @@ namespace jobSeeker.DataAccess.Data
         public DbSet<Company> Companies { get; set; }
         public DbSet<JobPosting> JobPostings { get; set; }
         public DbSet<Payment> Payments { get; set; }
-
+        public DbSet<JobApplication> JobApplications { get; set; }
     }
 }

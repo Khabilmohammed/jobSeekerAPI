@@ -23,7 +23,12 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
         }
         public async Task<IEnumerable<JobPosting>> GetAllJobPostingsAsync()
         {
-            return await _context.JobPostings.ToListAsync();
+            var currentDate = DateTime.UtcNow; 
+            var activeJobPostings = await _context.JobPostings
+                .Where(post => post.ExpiryDate > currentDate)  
+                .ToListAsync();
+
+            return activeJobPostings;
         }
         public async Task<JobPosting?> GetJobPostingByIdAsync(int jobId)
         {

@@ -10,7 +10,6 @@ namespace jobSeeker.Controllers
 {
     [Route("api/userManagement")]
     [ApiController]
-    [Authorize(Roles = SD.Role_Admin)]
     public class UserManagementController : Controller
     {
         private readonly IUserManagementService _userManagementService;

@@ -15,6 +15,7 @@ namespace jobSeeker.Models
 
         [Required]
         public int CompanyId { get; set; }
+        public Company Company { get; set; }
 
 
         [Required]
@@ -47,6 +48,6 @@ namespace jobSeeker.Models
         public bool IsActive { get; set; } = true;
         public ICollection<Payment> Payments { get; set; }
 
-    
+        public ICollection<JobApplication> Applications { get; set; }
     }
 }
