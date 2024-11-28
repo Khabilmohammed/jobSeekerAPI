@@ -103,6 +103,24 @@ namespace jobSeeker.DataAccess.Data
                 .WithMany()
                 .HasForeignKey(ja => ja.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<Follow>()
+    .ToTable("Follows")
+    .HasKey(f => new { f.FollowerId, f.FollowingId }); 
+
+            modelBuilder.Entity<Follow>()
+                .HasOne(f => f.Follower)
+                .WithMany() // No navigation property in ApplicationUser for followers
+                .HasForeignKey(f => f.FollowerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Follow>()
+                .HasOne(f => f.Following)
+                .WithMany() // No navigation property in ApplicationUser for following
+                .HasForeignKey(f => f.FollowingId)
+                .OnDelete(DeleteBehavior.NoAction);
+
         }
 
         
@@ -122,5 +140,6 @@ namespace jobSeeker.DataAccess.Data
         public DbSet<JobPosting> JobPostings { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<JobApplication> JobApplications { get; set; }
+        public DbSet<Follow> Follows { get; set; }
     }
 }

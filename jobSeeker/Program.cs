@@ -43,6 +43,9 @@ using jobSeeker.DataAccess.Services.IJobPostingService;
 using jobSeeker.DataAccess.Services.PymentService;
 using jobSeeker.DataAccess.Data.Repository.IJobApplicationRepo;
 using jobSeeker.DataAccess.Services.IJobApplicationService;
+using jobSeeker.DataAccess.Data.Repository.IFollowRepo;
+using jobSeeker.DataAccess.Services.IFollowService;
+using jobSeeker.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -67,7 +70,16 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddScoped<CloudinaryServices>();
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") 
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+    });
+});
 builder.Services.AddControllers();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -156,12 +168,14 @@ builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 builder.Services.AddScoped<IJobPostingServices, JobPostingServices>();
 builder.Services.AddScoped<IJobApplicationRepository,JobApplicationRepository >();
 builder.Services.AddScoped<IJobApplicationServices, JobApplicationServices>();
+builder.Services.AddScoped<IFollowRepository, FollowRepository>();
+builder.Services.AddScoped<IFollowServices, FollowServices>();
 
 
 
-builder.Services.AddAutoMapper(typeof(MappingProfile)); 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddSignalR();
 var app = builder.Build();
-
 app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
@@ -172,14 +186,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors(o => o.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+app.UseCors("AllowAll");
 
 // Ensure correct middleware order
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<ChatHub>("/chatHub");
 app.Run();
 
 Log.CloseAndFlush();
