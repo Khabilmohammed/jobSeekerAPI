@@ -45,7 +45,8 @@ using jobSeeker.DataAccess.Data.Repository.IJobApplicationRepo;
 using jobSeeker.DataAccess.Services.IJobApplicationService;
 using jobSeeker.DataAccess.Data.Repository.IFollowRepo;
 using jobSeeker.DataAccess.Services.IFollowService;
-using jobSeeker.Hubs;
+using jobSeeker.DataAccess.Data.Repository.MessageRepo;
+using jobSeeker.SingleR;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -101,6 +102,24 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) 
+            && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+
+        }
+    };
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -143,6 +162,7 @@ builder.Services.AddScoped<IStoryRepository, StoryRepository>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<OTPService>();
 builder.Services.AddScoped<PaymentServices>();
+builder.Services.AddSingleton<PresenceTracker>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ITokenBlacklistServices, TokenBlacklistService>();
@@ -170,6 +190,7 @@ builder.Services.AddScoped<IJobApplicationRepository,JobApplicationRepository >(
 builder.Services.AddScoped<IJobApplicationServices, JobApplicationServices>();
 builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 builder.Services.AddScoped<IFollowServices, FollowServices>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 
 
@@ -193,7 +214,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<PresenceHub>("hubs/presence");
 app.Run();
 
 Log.CloseAndFlush();

@@ -121,6 +121,18 @@ namespace jobSeeker.DataAccess.Data
                 .HasForeignKey(f => f.FollowingId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Message>()
+       .HasOne(m => m.Sender)
+       .WithMany(u => u.MessagesSent)
+       .HasForeignKey(m => m.SenderId)
+       .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Recipient)
+                .WithMany(u => u.MessagesReceived)
+                .HasForeignKey(m => m.RecipientId)
+                .OnDelete(DeleteBehavior.NoAction);
+
         }
 
         
@@ -141,5 +153,6 @@ namespace jobSeeker.DataAccess.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<JobApplication> JobApplications { get; set; }
         public DbSet<Follow> Follows { get; set; }
+        public DbSet<Message> Messages { get; set; }
     }
 }

@@ -108,6 +108,19 @@ namespace jobSeeker.Models.Mapper
                 .ForMember(dest => dest.ApplicationDate, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Applied"))
                 .ReverseMap();
+
+            CreateMap<Message, MessageDTO>()
+           .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => src.SenderId))
+           .ForMember(dest => dest.SenderUserName, opt => opt.MapFrom(src => src.SenderUserName))
+           .ForMember(dest => dest.RecipientId, opt => opt.MapFrom(src => src.RecipientId))
+           .ForMember(dest => dest.RecipientUserName, opt => opt.MapFrom(src => src.RecipientUserName))
+           .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+           .ForMember(dest => dest.DateRead, opt => opt.MapFrom(src => src.DateRead))
+           .ForMember(dest => dest.SentAt, opt => opt.MapFrom(src => src.SentAt))
+           .ReverseMap();
+
+            CreateMap<ApplicationUser, MessageUserDTO>();
+
         }
     }
 }

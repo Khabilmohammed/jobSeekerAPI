@@ -52,5 +52,7 @@ namespace jobSeeker.Models
         public List<Education> Educations { get; set; }= new List<Education>();
 
         public Company Company { get; set; }
+        public ICollection<Message> MessagesSent { get; set; }
+        public ICollection<Message> MessagesReceived { get; set; }
     }
 }
