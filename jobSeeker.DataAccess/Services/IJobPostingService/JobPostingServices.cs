@@ -31,6 +31,12 @@ namespace jobSeeker.DataAccess.Services.IJobPostingService
             return _mapper.Map<IEnumerable<JobPostingDTO>>(jobPostings);
         }
 
+        public async Task<IEnumerable<JobPostingDTO>> GetAllJobPostingsAdminAsync()
+        {
+            var jobPostings = await _repository.GetAllJobPostingsAdminAsync();
+            return _mapper.Map<IEnumerable<JobPostingDTO>>(jobPostings);
+        }
+
         public async Task<JobPostingDTO?> GetJobPostingByIdAsync(int jobId)
         {
             var jobPosting = await _repository.GetJobPostingByIdAsync(jobId);

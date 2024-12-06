@@ -1,4 +1,5 @@
 ﻿using jobSeeker.Models;
+using jobSeeker.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,8 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
         Task<bool> DeactivateUserAsync(string userId);
         Task<bool> ChangeUserRoleAsync(string userId, string newRole);
         Task<bool> UserExistsAsync(string userId);
+        Task<bool> UpdateUserAsync(UpdateUserDTO updateUserDto);
+
+
     }
 }

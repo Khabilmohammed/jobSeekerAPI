@@ -62,5 +62,18 @@ namespace jobSeeker.Controllers
             var isFollowing = await _followService.IsFollowingAsync(followerId, followingId);
             return Ok(new { isFollowing });
         }
+
+        [HttpGet("{userId}/people-you-may-know")]
+        public async Task<IActionResult> GetPeopleYouMayKnow(string userId, [FromQuery] int count = 3)
+        {
+            var suggestions = await _followService.GetPeopleYouMayKnowAsync(userId, count);
+            if (suggestions == null || !suggestions.Any())
+                return NotFound("No suggestions available.");
+
+            return Ok(suggestions);
+        }
+
+
+
     }
 }

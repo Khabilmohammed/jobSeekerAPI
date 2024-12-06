@@ -39,5 +39,10 @@ namespace jobSeeker.DataAccess.Services.IFollowService
             return await _followRepository.IsFollowingAsync(followerId, followingId);
         }
 
+        public async Task<List<followUserdetailDTO>> GetPeopleYouMayKnowAsync(string userId, int count)
+        {
+            return await _followRepository.GetPeopleYouMayKnowAsync(userId, count);
+        }
+
     }
 }

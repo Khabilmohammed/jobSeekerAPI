@@ -1,5 +1,8 @@
 ﻿using jobSeeker.DataAccess.Data.Repository.IUserManagementRepo;
+using jobSeeker.DataAccess.Services.CloudinaryService;
 using jobSeeker.Models;
+using jobSeeker.Models.DTO;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +14,12 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
     public class UserManagementService:IUserManagementService
     {
         private readonly IUserManagementRepository _userManagementRepository;
+        private readonly CloudinaryServices _cloudinaryServices;
 
-        public UserManagementService(IUserManagementRepository userManagementRepository)
+        public UserManagementService(IUserManagementRepository userManagementRepository,CloudinaryServices cloudinaryServices)
         {
             _userManagementRepository = userManagementRepository;
+            _cloudinaryServices = cloudinaryServices;
         }
         public async Task<ApplicationUser> GetUserByIdAsync(string userId)
         {
@@ -26,18 +31,30 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
             return await _userManagementRepository.GetAllUsersAsync();
         }
 
-        /*public async Task UpdateUserAsync(string userId, UpdateUserDTO updateUserDto)
+        public async Task<bool> UpdateUserAsync(UpdateUserDTO updateUserDto)
         {
-            var user = await _userManagementRepository.GetUserByIdAsync(userId);
-            if (user == null) throw new Exception("User not found");
+            // Fetch the existing user
+            var user = await _userManagementRepository.GetUserByIdAsync(updateUserDto.UserId);
 
-            // Update user properties from updateUserDto
-            user.FirstName = updateUserDto.FirstName;
-            user.LastName = updateUserDto.LastName;
-            // other updates...
+            if (user == null)
+                throw new ArgumentException("User not found.");
 
-            await _userManagementRepository.UpdateUserAsync(user);
-        }*/
+            // Map the DTO fields to the existing user object
+            user.FirstName = updateUserDto.FirstName ?? user.FirstName;
+            user.LastName = updateUserDto.LastName ?? user.LastName;
+            user.City = updateUserDto.City ?? user.City;
+            user.Country = updateUserDto.Country ?? user.Country;
+            user.Pincode = updateUserDto.Pincode ?? user.Pincode;
+            if (updateUserDto.ProfilePictureFile != null)
+            {
+                var profilePictureUrl = await _cloudinaryServices.UploadImageAsync(updateUserDto.ProfilePictureFile);
+                user.ProfilePicture = profilePictureUrl?.SecureUrl?.ToString() ?? user.ProfilePicture;
+            }
+
+            // Save the updated user to the repository
+            return await _userManagementRepository.UpdateUserAsync(user);
+        }
+
 
         public async Task DeleteUserAsync(string userId)
         {

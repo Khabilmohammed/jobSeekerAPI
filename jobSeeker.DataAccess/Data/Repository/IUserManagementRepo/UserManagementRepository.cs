@@ -80,10 +80,19 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserManagementRepo
                           select u).ToListAsync();
         }
 
-        public async Task UpdateUserAsync(ApplicationUser user)
+        public async Task<bool> UpdateUserAsync(ApplicationUser user)
         {
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Users.Update(user); // Track the updated user entity
+                await _context.SaveChangesAsync(); // Save changes to the database
+                return true; // Update successful
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating user: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task<bool> DeactivateUserAsync(string userId)

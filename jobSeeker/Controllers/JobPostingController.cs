@@ -78,6 +78,31 @@ namespace jobSeeker.Controllers
             }
         }
 
+
+        [HttpGet("all-job-admin")]
+        public async Task<IActionResult> GetAllJobPostingsForAdmin()
+        {
+            try
+            {
+                _logger.LogInformation("Fetching all job postings.");
+                var result = await _service.GetAllJobPostingsAdminAsync();
+
+                if (result == null || !result.Any())
+                {
+                    _logger.LogWarning("No job postings found.");
+                    return NotFound(ResponseHelper.Error("No job postings found", HttpStatusCode.NotFound));
+                }
+
+                return Ok(ResponseHelper.Success(result));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching all job postings.");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ResponseHelper.Error("An unexpected error occurred", HttpStatusCode.InternalServerError));
+            }
+        }
+
         [HttpGet("{jobId}")]
         public async Task<IActionResult> GetJobPostingById(int jobId)
         {

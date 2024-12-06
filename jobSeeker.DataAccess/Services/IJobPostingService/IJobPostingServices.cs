@@ -11,6 +11,8 @@ namespace jobSeeker.DataAccess.Services.IJobPostingService
     {
         Task<JobPostingDTO> CreateJobPostingAsync(CreateJobPostingDTO createJobPostingDTO);
         Task<IEnumerable<JobPostingDTO>> GetAllJobPostingsAsync();
+
+        Task<IEnumerable<JobPostingDTO>> GetAllJobPostingsAdminAsync();
         Task<JobPostingDTO?> GetJobPostingByIdAsync(int jobId);
         Task<IEnumerable<JobPostingDTO>> GetCompanyJobPostingsAsync(int companyId);
         Task<bool> UpdateJobPostingAsync(int jobId, UpdateJobPostingDTO createJobPostingDTO);

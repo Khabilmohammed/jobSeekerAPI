@@ -1,4 +1,5 @@
-﻿using jobSeeker.Models.DTO;
+﻿using jobSeeker.Models;
+using jobSeeker.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,8 @@ namespace jobSeeker.DataAccess.Services.IFollowService
         Task<List<followUserdetailDTO>> GetFollowersAsync(string userId);
         Task<List<followUserdetailDTO>> GetFollowingAsync(string userId);
         Task<bool> IsFollowingAsync(string followerId, string followingId);
+        Task<List<followUserdetailDTO>> GetPeopleYouMayKnowAsync(string userId, int count);
+
 
     }
 }

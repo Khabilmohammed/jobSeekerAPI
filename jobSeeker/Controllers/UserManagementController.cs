@@ -117,5 +117,34 @@ namespace jobSeeker.Controllers
             _logger.LogInformation("Successfully changed role for user: {UserId} to {NewRole}", request.UserId, request.NewRole);
             return Ok(ResponseHelper.Success("User role changed successfully"));
         }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser([FromForm] UpdateUserDTO request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.UserId))
+            {
+                _logger.LogWarning("Invalid update request received");
+                return BadRequest("Invalid request data.");
+            }
+
+            var user = await _userManagementService.GetUserByIdAsync(request.UserId);
+            if (user == null)
+            {
+                _logger.LogWarning("User not found for update: {UserId}", request.UserId);
+                return Ok(ResponseHelper.Error("User not found", HttpStatusCode.NotFound));
+            }
+
+            var result = await _userManagementService.UpdateUserAsync(request);
+
+            if (!result)
+            {
+                _logger.LogWarning("Failed to update user: {UserId}", request.UserId);
+                return BadRequest("Failed to update user.");
+            }
+
+            _logger.LogInformation("User updated successfully: {UserId}", request.UserId);
+            return Ok(ResponseHelper.Success("User updated successfully."));
+        }
+
     }
 }

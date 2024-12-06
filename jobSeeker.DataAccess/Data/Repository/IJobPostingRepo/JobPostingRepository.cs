@@ -30,6 +30,12 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
 
             return activeJobPostings;
         }
+
+        public async Task<IEnumerable<JobPosting>> GetAllJobPostingsAdminAsync()
+        {
+            return await _context.JobPostings.ToListAsync();
+        }
+
         public async Task<JobPosting?> GetJobPostingByIdAsync(int jobId)
         {
             return await _context.JobPostings.FindAsync(jobId);

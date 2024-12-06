@@ -30,6 +30,9 @@ namespace jobSeeker.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
+        [Url(ErrorMessage = "Please enter a valid URL for the Profile Picture.")]
+        public string ProfilePicture { get; set; }
+
         public bool IsCompleted { get; set; } = false;
 
     }

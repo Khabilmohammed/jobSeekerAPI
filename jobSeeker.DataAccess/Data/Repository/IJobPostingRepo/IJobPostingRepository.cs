@@ -11,6 +11,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
     {
         Task<JobPosting> AddJobPostingAsync(JobPosting jobPosting);
         Task<IEnumerable<JobPosting>> GetAllJobPostingsAsync();
+        Task<IEnumerable<JobPosting>> GetAllJobPostingsAdminAsync();
         Task<IEnumerable<JobPosting>> GetCompanyJobPostingsAsync(int companyId);
         Task<JobPosting?> GetJobPostingByIdAsync(int jobId);
         Task<bool> UpdateJobPostingAsync(JobPosting jobPosting);

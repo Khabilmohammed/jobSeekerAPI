@@ -25,6 +25,8 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobApplicationRepo
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == jobApplication.UserId);
 
+
+
             if (jobPosting == null || user == null)
             {
                 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
 {
-    public class FollowRepository:IFollowRepository
+    public class FollowRepository : IFollowRepository
     {
         private readonly ApplicationDbContext _context;
         public FollowRepository(ApplicationDbContext context)
@@ -19,7 +19,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
         public async Task<bool> AddFollowAsync(string followerId, string followingId)
         {
             if (await _context.Follows.AnyAsync(f => f.FollowerId == followerId && f.FollowingId == followingId))
-                return false; // Already following
+                return false;
 
             var follow = new Follow
             {
@@ -72,5 +72,22 @@ namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
                 .AnyAsync(f => f.FollowerId == followerId && f.FollowingId == followingId);
         }
 
+        public async Task<List<followUserdetailDTO>> GetPeopleYouMayKnowAsync(string userId, int count)
+        {
+            var followedUsers = _context.Follows
+                .Where(f => f.FollowerId == userId)
+                .Select(f => f.FollowingId);
+
+            return await _context.ApplicationUsers
+                .Where(user => user.Id != userId && !followedUsers.Contains(user.Id))
+                .Select(user => new followUserdetailDTO
+                {
+                    UserId = user.Id,
+                    FirstName = user.FirstName,
+                })
+                .Take(count)
+                .ToListAsync();
+
+        }
     }
 }
