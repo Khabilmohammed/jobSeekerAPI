@@ -25,7 +25,12 @@ namespace jobSeeker.DataAccess.Data.Repository.ISavedRepo
         public async Task<IEnumerable<SavedPost>> GetUserSavedPostsAsync(string userId)
         {
             return await _context.SavedPosts
-                .Include(sp => sp.Post) // Include Post details if needed
+                 .Include(sp => sp.Post)
+            .ThenInclude(post => post.Images) // Include post images
+        .Include(sp => sp.Post)
+            .ThenInclude(post => post.Likes) // Include post likes
+        .Include(sp => sp.Post)
+            .ThenInclude(post => post.Comments) // Include post comments
                 .Include(sp => sp.User) // Include User details to fetch username and other user info
                 .Where(sp => sp.UserId == userId)
                 .ToListAsync();

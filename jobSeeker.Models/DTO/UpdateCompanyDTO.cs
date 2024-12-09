@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -30,8 +31,8 @@ namespace jobSeeker.Models.DTO
         [StringLength(50, ErrorMessage = "Size cannot exceed 50 characters.")]
         public string Size { get; set; }
 
-        [Url(ErrorMessage = "Please enter a valid URL for the Logo.")]
-        public string LogoUrl { get; set; }
+        public IFormFile BannerImage { get; set; }
+        public IFormFile LogoUrl { get; set; } 
         public string about { get; set; }
     }
 }

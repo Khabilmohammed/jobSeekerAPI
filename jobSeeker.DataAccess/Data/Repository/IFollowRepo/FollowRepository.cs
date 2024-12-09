@@ -51,6 +51,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
                           {
                               UserId = user.Id,
                               FirstName = user.FirstName,
+                              ProfilePicture = user.ProfilePicture,
                           }).ToListAsync();
         }
 
@@ -64,6 +65,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
                           {
                               UserId = user.Id,
                               FirstName = user.FirstName,
+                              ProfilePicture=user.ProfilePicture,
                           }).ToListAsync();
         }
         public async Task<bool> IsFollowingAsync(string followerId, string followingId)
@@ -84,6 +86,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
                 {
                     UserId = user.Id,
                     FirstName = user.FirstName,
+                    ProfilePicture = user.ProfilePicture,
                 })
                 .Take(count)
                 .ToListAsync();

@@ -79,7 +79,7 @@ namespace jobSeeker.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCompany(int id, [FromBody] UpdateCompanyDTO updateCompanyDTO)
+        public async Task<IActionResult> UpdateCompany(int id, [FromForm] UpdateCompanyDTO updateCompanyDTO)
         {
             try
             {
@@ -88,6 +88,8 @@ namespace jobSeeker.Controllers
                     _logger.LogWarning("Invalid model state for updating company with ID: {CompanyId}", id);
                     return BadRequest(ResponseHelper.Error("Invalid input data", HttpStatusCode.BadRequest));
                 }
+
+
 
                 var success = await _companyService.UpdateCompanyAsync(id, updateCompanyDTO);
                 if (!success)

@@ -13,5 +13,10 @@ namespace jobSeeker.Models.DTO
         public string UserName { get; set; } 
         public PostDTO Post { get; set; }
         public string PostContent { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+        public int CommentCount { get; set; }
+        public List<string> ImageUrls { get; set; } = new List<string>();
+
     }
 }

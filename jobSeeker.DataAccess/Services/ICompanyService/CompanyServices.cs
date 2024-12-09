@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.Design;
+using jobSeeker.DataAccess.Services.CloudinaryService;
+using Microsoft.AspNetCore.Mvc;
 
 namespace jobSeeker.DataAccess.Services.ICompanyService
 {
@@ -15,10 +17,12 @@ namespace jobSeeker.DataAccess.Services.ICompanyService
     {
         private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
-        public CompanyServices(ICompanyRepository companyRepository, IMapper mapper)
+        private readonly CloudinaryServices _cloudinaryServices;    
+        public CompanyServices(ICompanyRepository companyRepository, IMapper mapper, CloudinaryServices cloudinaryServices)
         {
             _companyRepository = companyRepository;
             _mapper = mapper;
+            _cloudinaryServices = cloudinaryServices;
         }
         public async Task<CompanyDTO> CreateCompanyAsync(CreateCompanyDTO createCompanyDTO)
         {
@@ -44,10 +48,32 @@ namespace jobSeeker.DataAccess.Services.ICompanyService
             return company != null ? _mapper.Map<CompanyDTO>(company) : null;
         }
 
-        public async Task<bool> UpdateCompanyAsync(int companyId, UpdateCompanyDTO updateCompanyDTO)
+        public async Task<bool> UpdateCompanyAsync(int companyId,UpdateCompanyDTO updateCompanyDTO)
         {
             var company = await _companyRepository.GetByIdAsync(companyId);
             if (company == null) return false;
+
+            // Handle Logo upload if provided
+            if (updateCompanyDTO.LogoUrl != null)
+            {
+                var logoUploadResult = await _cloudinaryServices.UploadImageAsync(updateCompanyDTO.LogoUrl);
+                if (logoUploadResult.Error != null)
+                {
+                    throw new InvalidOperationException("Failed to upload the logo.");
+                }
+                company.LogoUrl = logoUploadResult.Url.ToString();
+            }
+
+            // Handle Banner upload if provided
+            if (updateCompanyDTO.BannerImage != null)
+            {
+                var bannerUploadResult = await _cloudinaryServices.UploadImageAsync(updateCompanyDTO.BannerImage);
+                if (bannerUploadResult.Error != null)
+                {
+                    throw new InvalidOperationException("Failed to upload the banner.");
+                }
+                company.Banner = bannerUploadResult.Url.ToString();
+            }
 
             _mapper.Map(updateCompanyDTO, company);
             company.UpdatedAt = DateTime.UtcNow;

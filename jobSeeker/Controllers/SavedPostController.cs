@@ -13,7 +13,6 @@ namespace jobSeeker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class SavedPostController : ControllerBase
     {
         private readonly ISavedPostservices _savedPostService;
@@ -70,14 +69,13 @@ namespace jobSeeker.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetSavedPosts()
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetSavedPosts(string userId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                _logger.LogWarning("GetSavedPosts failed: User is not authenticated.");
-                return Unauthorized(ResponseHelper.Error("User is not authenticated."));
+                _logger.LogWarning("GetSavedPosts failed: UserId is not provided.");
+                return BadRequest(ResponseHelper.Error("UserId is required."));
             }
 
             try
@@ -91,7 +89,7 @@ namespace jobSeeker.Controllers
 
                 var savedPostDtos = _mapper.Map<IEnumerable<SavePostDTO>>(savedPosts); // Map to DTOs
                 _logger.LogInformation("Saved posts retrieved successfully for user: {UserId}", userId);
-                return Ok(ResponseHelper.Success(savedPostDtos)); 
+                return Ok(ResponseHelper.Success(savedPostDtos));
             }
             catch (Exception ex)
             {
@@ -99,5 +97,6 @@ namespace jobSeeker.Controllers
                 return StatusCode(500, ResponseHelper.Error(ex.Message));
             }
         }
+
     }
 }

@@ -59,8 +59,12 @@ namespace jobSeeker.Models.Mapper
                         .ReverseMap();
 
             CreateMap<SavedPost, SavePostDTO>()
-           .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName)) // Map UserName
-           .ForMember(dest => dest.Post, opt => opt.MapFrom(src => src.Post)) // Map Post
+                  .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+            .ForMember(dest => dest.LikeCount, opt => opt.MapFrom(src => src.Post.Likes.Count))
+    .ForMember(dest => dest.CommentCount, opt => opt.MapFrom(src => src.Post.Comments.Count))
+    .ForMember(dest => dest.ImageUrls, opt => opt.MapFrom(src => src.Post.Images.Select(img => img.ImageUrl)))
+    .ForMember(dest => dest.PostContent, opt => opt.MapFrom(src => src.Post.Content))
+    .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Post.CreatedAt))
            .ReverseMap();
 
             CreateMap<Experience, ExperienceDto>()
@@ -89,7 +93,10 @@ namespace jobSeeker.Models.Mapper
             // UpdateCompanyDTO to Company
             CreateMap<UpdateCompanyDTO, Company>()
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ReverseMap();
+                  .ForMember(dest => dest.LogoUrl, opt => opt.Ignore()) 
+                  .ForMember(dest => dest.Banner, opt => opt.Ignore()) 
+                    .ReverseMap();
+
             CreateMap<JobPosting, JobPostingDTO>().ReverseMap();
             CreateMap<CreateJobPostingDTO, JobPosting>();
             CreateMap<UpdateJobPostingDTO, JobPosting>()
