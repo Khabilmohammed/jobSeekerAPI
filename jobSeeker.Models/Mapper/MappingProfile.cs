@@ -97,8 +97,12 @@ namespace jobSeeker.Models.Mapper
                   .ForMember(dest => dest.Banner, opt => opt.Ignore()) 
                     .ReverseMap();
 
-            CreateMap<JobPosting, JobPostingDTO>().ReverseMap();
+            CreateMap<JobPosting, JobPostingDTO>()
+                .ForPath(dest => dest.CompanyLogo, opt => opt.MapFrom(src => src.Company.LogoUrl))
+                .ReverseMap();
+
             CreateMap<CreateJobPostingDTO, JobPosting>();
+ 
             CreateMap<UpdateJobPostingDTO, JobPosting>()
     .ForMember(dest => dest.CompanyId, opt => opt.Ignore());
 

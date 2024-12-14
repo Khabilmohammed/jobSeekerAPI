@@ -82,6 +82,50 @@ namespace jobSeeker.SingleR
         }
 
 
+        public async Task<bool> DeleteMessage(int messageId)
+        {
+            var username = Context.User.Identity?.Name;
+
+            // Retrieve the message
+            var message = await _messageRepository.GetMessage(messageId);
+
+            if (message == null)
+            {
+                throw new HubException("Message not found");
+            }
+
+            // Check if the user is authorized to delete the message
+            if (message.Sender.UserName != username && message.Recipient.UserName != username)
+            {
+                throw new HubException("You are not authorized to delete this message");
+            }
+
+            // Mark as deleted based on the user
+            if (message.Sender.UserName == username)
+            {
+                message.SenderDeleted = true;
+            }
+            if (message.Recipient.UserName == username)
+            {
+                message.RecipientDeleted = true;
+            }
+            // If both users have deleted the message, remove it completely
+            if (message.SenderDeleted && message.RecipientDeleted)
+            {
+                _messageRepository.DeleteMessage(message);
+            }
+            // Save changes and notify the group
+            if (await _messageRepository.SaveChangesAsync())
+            {
+                var groupName = GetGroupName(message.SenderUserName, message.RecipientUserName);
+                // Notify clients in the group about the deleted message
+                await Clients.Group(groupName).SendAsync("MessageDeleted", messageId);
+                return true;
+            }
+            return false;
+        }
+
+
         private string GetGroupName(string caller,string other)
         {
             var stringCompare = string.CompareOrdinal(caller, other) < 0;

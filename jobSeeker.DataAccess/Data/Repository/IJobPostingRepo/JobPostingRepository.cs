@@ -25,6 +25,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
         {
             var currentDate = DateTime.UtcNow; 
             var activeJobPostings = await _context.JobPostings
+                 .Include(post => post.Company)
                 .Where(post => post.ExpiryDate > currentDate)  
                 .ToListAsync();
 
