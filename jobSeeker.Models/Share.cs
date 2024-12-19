@@ -17,12 +17,15 @@ namespace jobSeeker.Models
         [Required(ErrorMessage = "PostId is required.")]
         public int PostId { get; set; } // Foreign key to Post
 
-        [Required(ErrorMessage = "UserId is required.")]
-        public string UserId { get; set; } // Foreign key to User model
-        public DateTime SharedAt { get; set; } = DateTime.Now; // Automatically set the share timestamp
+        [Required(ErrorMessage = "SenderId is required.")]
+        public string SenderId { get; set; }
 
+        [Required(ErrorMessage = "RecipientId is required.")]
+        public string RecipientId { get; set; }
+        public DateTime SharedAt { get; set; } = DateTime.Now; 
         public Post Post { get; set; } // Navigation property
-        public ApplicationUser User { get; set; } // Navigation property
+        public ApplicationUser Sender { get; set; } // Navigation property
+        public ApplicationUser Recipient { get; set; }
     }
 
 }

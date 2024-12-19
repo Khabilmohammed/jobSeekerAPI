@@ -133,6 +133,29 @@ namespace jobSeeker.DataAccess.Data
                 .HasForeignKey(m => m.RecipientId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Share>()
+    .ToTable("Shares")
+    .HasKey(s => s.ShareId);  // Define the primary key
+
+            modelBuilder.Entity<Share>()
+                .HasOne(s => s.Post)
+                .WithMany(p => p.Shares)
+                .HasForeignKey(s => s.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Share>()
+                .HasOne(s => s.Sender)
+                .WithMany(u => u.SharesSent)  // Assuming you have a navigation property for shares sent by users
+                .HasForeignKey(s => s.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Share>()
+                .HasOne(s => s.Recipient)
+                .WithMany(u => u.SharesReceived)  // Assuming you have a navigation property for shares received by users
+                .HasForeignKey(s => s.RecipientId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
         }
 
         

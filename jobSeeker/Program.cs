@@ -47,13 +47,15 @@ using jobSeeker.DataAccess.Data.Repository.IFollowRepo;
 using jobSeeker.DataAccess.Services.IFollowService;
 using jobSeeker.DataAccess.Data.Repository.MessageRepo;
 using jobSeeker.SingleR;
+using jobSeeker.DataAccess.Data.Repository.IShareRepo;
+using jobSeeker.DataAccess.Services.IShareService;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)  // Reads from appsettings.json
+    .ReadFrom.Configuration(builder.Configuration)  
     .Enrich.FromLogContext()
-    .WriteTo.Console()  // Logs to the console
-    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)  // Logs to a file, rolling daily
+    .WriteTo.Console()  
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day) 
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -191,6 +193,8 @@ builder.Services.AddScoped<IJobApplicationServices, JobApplicationServices>();
 builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 builder.Services.AddScoped<IFollowServices, FollowServices>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IShareRepository, ShareRepository>();
+builder.Services.AddScoped<IShareServices, ShareServices>();
 
 
 

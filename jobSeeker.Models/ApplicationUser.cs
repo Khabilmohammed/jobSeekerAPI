@@ -54,5 +54,8 @@ namespace jobSeeker.Models
         public Company Company { get; set; }
         public ICollection<Message> MessagesSent { get; set; }
         public ICollection<Message> MessagesReceived { get; set; }
+
+        public ICollection<Share> SharesSent { get; set; }
+        public ICollection<Share> SharesReceived { get; set; }
     }
 }

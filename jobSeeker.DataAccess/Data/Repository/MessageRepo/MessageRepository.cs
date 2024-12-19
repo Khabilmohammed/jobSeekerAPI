@@ -80,6 +80,7 @@ namespace jobSeeker.DataAccess.Data.Repository.MessageRepo
                 }
                 await _context.SaveChangesAsync();  
             }
+
             return _mapper.Map<IEnumerable<MessageDTO>>(messages);
         }
 
@@ -98,9 +99,16 @@ namespace jobSeeker.DataAccess.Data.Repository.MessageRepo
 
             // Step 3: Fetch user details for the distinct user IDs
             var users = await _context.Users
-                .Where(u => userIds.Contains(u.Id))
-                .ProjectTo<MessageUserDTO>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+         .Where(u => userIds.Contains(u.Id))
+         .Select(u => new MessageUserDTO
+         {
+             UserId = u.Id,  // Map the UserId from the Users table
+             UserName = u.UserName,
+             FirstName = u.FirstName,
+             LastName = u.LastName,
+             ProfilePicture = u.ProfilePicture
+         })
+         .ToListAsync();
 
             return users;
         }

@@ -39,7 +39,11 @@ namespace jobSeeker.Models.Mapper
 
 
             CreateMap<Like, LikeCreateDTO>().ReverseMap();
-            CreateMap<Share, ShareDTO>().ReverseMap();
+            CreateMap<Share, ShareDTO>()
+           
+    .ForMember(dest => dest.PostId, opt => opt.MapFrom(src => src.Post.PostId))
+                .ReverseMap();
+
             CreateMap<PostImage, PostImageDTO>().ReverseMap();
 
 
