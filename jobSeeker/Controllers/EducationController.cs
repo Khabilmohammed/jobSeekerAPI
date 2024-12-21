@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using jobSeeker.DataAccess.Services.IUsermanagemetService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace jobSeeker.Controllers
 {
     [Route("api/Education")]
     [ApiController]
+    [Authorize]
     public class EducationController : ControllerBase
     {
         private readonly IEducationServices _educationService;

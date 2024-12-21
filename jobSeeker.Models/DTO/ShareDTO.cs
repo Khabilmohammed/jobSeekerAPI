@@ -13,5 +13,6 @@ namespace jobSeeker.Models.DTO
         public string SenderId { get; set; }    
         public string RecipientId { get; set; }
         public DateTime SharedAt { get; set; }
+
     }
 }

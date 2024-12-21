@@ -2,6 +2,7 @@
 using jobSeeker.DataAccess.Services.PymentService;
 using jobSeeker.Models;
 using jobSeeker.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -10,6 +11,7 @@ namespace jobSeeker.Controllers
 {
     [Route("api/JobPosting")]
     [ApiController]
+    [Authorize]
     public class JobPostingController : ControllerBase
     {
         private readonly IJobPostingServices _service;

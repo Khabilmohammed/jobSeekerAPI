@@ -11,6 +11,7 @@ namespace jobSeeker.Controllers
 {
     [Route("api/stories")]
     [ApiController]
+    [Authorize]
     public class StoryController : Controller
     {
         private readonly IStoryServices _storyService;

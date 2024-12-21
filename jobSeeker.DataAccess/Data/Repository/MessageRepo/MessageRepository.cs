@@ -80,7 +80,6 @@ namespace jobSeeker.DataAccess.Data.Repository.MessageRepo
                 }
                 await _context.SaveChangesAsync();  
             }
-
             return _mapper.Map<IEnumerable<MessageDTO>>(messages);
         }
 

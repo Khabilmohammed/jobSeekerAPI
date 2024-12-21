@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using jobSeeker.DataAccess.Data.Repository.IShareRepo;
 using jobSeeker.DataAccess.Data.Repository.IUserRepository;
+using jobSeeker.DataAccess.Migrations;
 using jobSeeker.DataAccess.Services.IPostService;
 using jobSeeker.Models;
 using jobSeeker.Models.DTO;
@@ -55,17 +56,9 @@ namespace jobSeeker.DataAccess.Services.IShareService
             };
         }
 
-        public async Task<IEnumerable<ShareDTO>> GetSharesByUserIdAsync(string userId)
+        public async Task<IEnumerable<Share>> GetUserSharedPostsAsync(string userId)
         {
-            var shares = await _shareRepository.GetSharesByUserIdAsync(userId);
-            var shareDTOs = _mapper.Map<IEnumerable<ShareDTO>>(shares);
-            return shareDTOs;
-        }
-
-        public async Task<ShareDTO> GetShareByIdAsync(int id)
-        {
-            var share = await _shareRepository.GetByIdAsync(id);
-            return share != null ? _mapper.Map<ShareDTO>(share) : null;
+            return await _shareRepository.GetSharesByUserIdAsync(userId);
         }
 
     }

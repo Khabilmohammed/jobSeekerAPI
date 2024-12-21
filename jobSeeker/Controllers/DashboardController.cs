@@ -1,5 +1,6 @@
 ﻿using jobSeeker.DataAccess.Data;
 using jobSeeker.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ namespace jobSeeker.Controllers
 {
     [Route("api/Dashboard")]
     [ApiController]
+    [Authorize]
     public class DashboardController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

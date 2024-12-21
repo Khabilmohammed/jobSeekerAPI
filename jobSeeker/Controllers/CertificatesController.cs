@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace jobSeeker.Controllers
 {
     [Route("api/Certificate")]
     [ApiController]
+    [Authorize]
     public class CertificatesController : ControllerBase
     {
         private readonly ICertificateServices _certificateService;

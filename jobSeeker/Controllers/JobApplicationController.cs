@@ -4,11 +4,13 @@ using jobSeeker.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace jobSeeker.Controllers
 {
     [Route("api/JobApplication")]
     [ApiController]
+    [Authorize]
     public class JobApplicationController : ControllerBase
     {
         private readonly IJobApplicationServices _jobApplicationServices;

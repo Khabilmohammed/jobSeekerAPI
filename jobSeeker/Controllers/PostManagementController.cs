@@ -5,6 +5,7 @@ using jobSeeker.DataAccess.Services.IPostService;
 using jobSeeker.DataAccess.Services.IUsermanagemetService;
 using jobSeeker.Models;
 using jobSeeker.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,10 @@ using System.Net;
 
 namespace jobSeeker.Controllers
 {
+    
     [Route("api/post")]
     [ApiController]
+    [Authorize]
     public class PostManagementController : ControllerBase
     {
         private readonly IPostServices _postServices;

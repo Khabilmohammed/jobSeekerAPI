@@ -1,5 +1,6 @@
 ﻿using jobSeeker.DataAccess.Services.IFollowService;
 using jobSeeker.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,7 @@ namespace jobSeeker.Controllers
 {
     [Route("api/Follow")]
     [ApiController]
+    [Authorize]
     public class FollowController : ControllerBase
     {
         private readonly IFollowServices _followService;

@@ -20,26 +20,15 @@ namespace jobSeeker.DataAccess.Data.Repository.IShareRepo
         {
             await _context.Shares.AddAsync(share);
             await _context.SaveChangesAsync();
-            return share; // Return the created share entity
-        }
-
-        public async Task<Share> GetByIdAsync(int id)
-        {
-            return await _context.Shares
-                .Include(s => s.Post)    // Include the related Post entity
-                .Include(s => s.Sender)  // Include the Sender (User) details
-                .Include(s => s.Recipient) // Include the Recipient (User) details
-                .FirstOrDefaultAsync(s => s.ShareId == id);
+            return share; 
         }
 
 
         public async Task<IEnumerable<Share>> GetSharesByUserIdAsync(string userId)
         {
-            return await _context.Shares
-                .Include(s => s.Post)     // Include Post details
-                .Include(s => s.Sender)   // Include Sender details
-                .Where(s => s.SenderId == userId) // Filter by SenderId
-                .ToListAsync();
+            return await _context.Shares      
+         .Where(sp => sp.SenderId == userId)
+         .ToListAsync();
         }
     }
 }

@@ -5,11 +5,13 @@ using jobSeeker.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace jobSeeker.Controllers
 {
     [Route("api/like")]
     [ApiController]
+    [Authorize]
     public class LikeController : ControllerBase
     {
         private readonly ILikeservice _likeService;

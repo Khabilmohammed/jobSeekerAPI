@@ -2,6 +2,7 @@
 using jobSeeker.DataAccess.Services.IExperienceService;
 using jobSeeker.Models;
 using jobSeeker.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -11,6 +12,7 @@ namespace jobSeeker.Controllers
 {
     [Route("api/Experience")]
     [ApiController]
+    [Authorize]
     public class ExperienceController : ControllerBase
     {
         private readonly IExperienceServices _experienceService;

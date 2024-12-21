@@ -13,6 +13,7 @@ namespace jobSeeker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SavedPostController : ControllerBase
     {
         private readonly ISavedPostservices _savedPostService;

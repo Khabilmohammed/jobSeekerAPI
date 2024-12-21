@@ -1,8 +1,10 @@
 ﻿using jobSeeker.DataAccess.Data.Repository.IShareRepo;
 using jobSeeker.DataAccess.Services.IShareService;
+using jobSeeker.Models;
 using jobSeeker.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace jobSeeker.Controllers
 {
@@ -31,27 +33,27 @@ namespace jobSeeker.Controllers
             return Ok(result);
         }
 
-        [HttpGet("UserShares/{userId}")]
-        public async Task<IActionResult> GetUserShares(string userId)
+        [HttpGet("shared")]
+        public async Task<IActionResult> GetSharedPosts()
         {
-            var shares = await _shareService.GetSharesByUserIdAsync(userId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized("User is not authenticated.");
 
-            if (shares == null || !shares.Any())
-                return NotFound("No shares found for this user.");
+            try
+            {
+                var sharedPosts = await _shareService.GetUserSharedPostsAsync(userId);
+                if (!sharedPosts.Any())
+                {
+                    return NotFound("No shared posts found.");
+                }
 
-            return Ok(shares);
-        }
-
-        // GET: api/Share/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetShareById(int id)
-        {
-            var share = await _shareService.GetShareByIdAsync(id);
-
-            if (share == null)
-                return NotFound($"Share with ID {id} not found.");
-
-            return Ok(share);
+                return Ok(sharedPosts); // Return shared posts directly
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while retrieving shared posts.");
+            }
         }
     }
 }
