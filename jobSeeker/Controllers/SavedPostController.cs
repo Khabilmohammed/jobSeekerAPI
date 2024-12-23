@@ -85,7 +85,7 @@ namespace jobSeeker.Controllers
                 if (savedPosts == null || !savedPosts.Any())
                 {
                     _logger.LogWarning("No saved posts found for user: {UserId}", userId);
-                    return NotFound(ResponseHelper.Error("No saved posts found."));
+                    return Ok(ResponseHelper.Success(savedPosts));
                 }
 
                 var savedPostDtos = _mapper.Map<IEnumerable<SavePostDTO>>(savedPosts); // Map to DTOs

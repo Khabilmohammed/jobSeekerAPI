@@ -1,4 +1,5 @@
 ﻿using jobSeeker.Models;
+using jobSeeker.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,6 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
         Task<JobPosting?> GetJobPostingByIdAsync(int jobId);
         Task<bool> UpdateJobPostingAsync(JobPosting jobPosting);
         Task<bool> DeleteJobPostingAsync(int jobId);
+        Task<IEnumerable<JobPostingDTO>> SearchJobPostsAsync(string query);
     }
 }

@@ -38,6 +38,7 @@ namespace jobSeeker.Controllers
 
 
         [HttpGet("getuserall")]
+        [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userManagementService.GetAllUsersAsync();
@@ -48,7 +49,7 @@ namespace jobSeeker.Controllers
 
         [HttpDelete("delete/{userId}")]
         public async Task<IActionResult> DeleteUser(string userId)
-        {
+       {
             var user = await _userManagementService.GetUserByIdAsync(userId);
             if (user == null)
             {
@@ -77,6 +78,7 @@ namespace jobSeeker.Controllers
 
 
         [HttpGet("role/{role}")]
+        [Authorize]
         public async Task<IActionResult> GetUsersByRole(string role)
         {
             var users = await _userManagementService.GetUsersByRoleAsync(role);
@@ -98,6 +100,7 @@ namespace jobSeeker.Controllers
         }
 
         [HttpPost("changeuserrole")]
+        [Authorize]
         public async Task<IActionResult> ChangeUserRole([FromBody] ChangeUserRoleRequestDTO request) // Assuming you have a DTO for the request
         {
             if (request == null || string.IsNullOrEmpty(request.UserId) || string.IsNullOrEmpty(request.NewRole))

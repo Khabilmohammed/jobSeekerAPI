@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace jobSeeker.DataAccess.Services.IJobPostingService
 {
@@ -59,6 +60,11 @@ namespace jobSeeker.DataAccess.Services.IJobPostingService
         public async Task<bool> DeleteJobPostingAsync(int jobId)
         {
             return await _repository.DeleteJobPostingAsync(jobId);
+        }
+
+        public async Task<IEnumerable<JobPostingDTO>> SearchJobPostsAsync(string query)
+        {
+            return await _repository.SearchJobPostsAsync(query);
         }
     }
 }

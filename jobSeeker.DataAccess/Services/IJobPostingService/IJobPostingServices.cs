@@ -17,5 +17,6 @@ namespace jobSeeker.DataAccess.Services.IJobPostingService
         Task<IEnumerable<JobPostingDTO>> GetCompanyJobPostingsAsync(int companyId);
         Task<bool> UpdateJobPostingAsync(int jobId, UpdateJobPostingDTO createJobPostingDTO);
         Task<bool> DeleteJobPostingAsync(int jobId);
+        Task<IEnumerable<JobPostingDTO>> SearchJobPostsAsync(string query);
     }
 }

@@ -12,7 +12,6 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
     {
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task<List<ApplicationUser>> GetAllUsersAsync();
-        //Task UpdateUserAsync(string userId, UpdateUserDTO updateUserDto);
         Task DeleteUserAsync(string userId);
         Task<ApplicationUser> GetUserDetailsAsync(string userId);
         Task<List<ApplicationUser>> GetUsersByRoleAsync(string role);
@@ -20,7 +19,7 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
         Task<bool> ChangeUserRoleAsync(string userId, string newRole);
         Task<bool> UserExistsAsync(string userId);
         Task<bool> UpdateUserAsync(UpdateUserDTO updateUserDto);
-
-
+/*        Task<IEnumerable<UserDTOSerch>> SearchUsersAsync(string query);
+*/
     }
 }

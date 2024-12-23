@@ -22,6 +22,10 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserManagementRepo
 
         public async Task DeleteUserAsync(string userId)
         {
+            
+            var stories = _context.Stories.Where(s => s.UserId == userId).ToList();
+            _context.Stories.RemoveRange(stories);
+            await _context.SaveChangesAsync();
             var user = await _context.Users.FindAsync(userId);
             if (user != null)
             {

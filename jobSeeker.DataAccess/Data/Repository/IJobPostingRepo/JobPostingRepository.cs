@@ -1,4 +1,5 @@
 ﻿using jobSeeker.Models;
+using jobSeeker.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -59,6 +60,38 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
             if (jobPosting == null) return false;
             _context.JobPostings.Remove(jobPosting);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<IEnumerable<JobPostingDTO>> SearchJobPostsAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return Enumerable.Empty<JobPostingDTO>();
+            }
+
+            query = query.ToLower(); // Normalize query for case-insensitive search
+            var currentDate = DateTime.UtcNow;
+            var jobPostings = await _context.JobPostings
+                .Where(jp =>
+                    jp.Title.ToLower().Contains(query) ||
+                    jp.Description.ToLower().Contains(query) ||
+                    jp.Location.ToLower().Contains(query))
+                .Where(jp => jp.ExpiryDate > currentDate)
+                .Select(jp => new JobPostingDTO
+                {
+                    JobId = jp.JobId,
+                    Title = jp.Title,
+                    Description = jp.Description,
+                    Location = jp.Location,
+                    PostedDate = jp.PostedDate,
+                    CompanyId=jp.CompanyId,
+                    ExperienceRequired=jp.ExperienceRequired,
+                    JobType=jp.JobType
+                })
+                
+                .ToListAsync();
+
+            return jobPostings;
         }
     }
 }
