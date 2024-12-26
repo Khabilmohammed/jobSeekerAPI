@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using jobSeeker.DataAccess.Services.TokenService;
 using System.Web;
 using jobSeeker.DataAccess.Services.ICompanyService;
+using Microsoft.AspNetCore.Http;
 
 namespace jobSeeker.DataAccess.Services.IUserRepositoryService
 {
@@ -36,7 +37,7 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
         private static readonly Dictionary<string, RegisterRequestDTO> _temporaryStorage = new();
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public AuthService(IUserRepository userRepository,
                            UserManager<ApplicationUser> userManager,
                            RoleManager<IdentityRole> roleManager,
@@ -46,7 +47,8 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
                            ITokenBlacklistServices tokenBlacklistService,
                            IPasswordHasher<ApplicationUser> passwordHasher,
                            ITokenService tokenService,
-                           ICompanyServices companyService
+                           ICompanyServices companyService,
+                           IHttpContextAccessor httpContextAccessor
                              )
         {
             _userRepository = userRepository;
@@ -59,6 +61,7 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
             _passwordHasher = passwordHasher;
             _tokenService=tokenService;
             _companyService = companyService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task RegisterAsync(RegisterRequestDTO model)
@@ -119,7 +122,18 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
+            //refresh token setting.
+            var refreshToken = Guid.NewGuid().ToString();
+            var refreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = refreshTokenExpiry
+            };
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
             // Prepare the response
             var loginResponse = new LoginResposeDTO
             {
@@ -214,6 +228,7 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
 
         public async Task LogoutAsync(string token)
         {
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete("RefreshToken");
             await _tokenBlacklistService.AddToBlacklistAsync(token);
         }
 
@@ -267,6 +282,75 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
                 await _roleManager.CreateAsync(new IdentityRole(SD.Role_Company));
         }
 
-        
+        public async Task<APIResponse> RefreshTokenAsync(string refreshToken)
+        {
+            var cookies = _httpContextAccessor.HttpContext?.Request.Cookies;
+            if (cookies == null || !cookies.ContainsKey("RefreshToken"))
+                return ResponseHelper.Error("Refresh token is missing.", HttpStatusCode.Unauthorized);
+
+            var savedRefreshToken = cookies["RefreshToken"];
+            if (savedRefreshToken != refreshToken)
+                return ResponseHelper.Error("Invalid refresh token.", HttpStatusCode.Unauthorized);
+
+            // Assuming the user information is in the JWT claims
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return ResponseHelper.Error("User information is missing in the request.", HttpStatusCode.Unauthorized);
+
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+                return ResponseHelper.Error("User not found.", HttpStatusCode.Unauthorized);
+
+            // Generate new JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Role, (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? string.Empty),
+             new Claim("firstName", user.FirstName ?? string.Empty),
+            new Claim("lastName", user.LastName ?? string.Empty),
+            new Claim("city", user.City ?? string.Empty),
+            new Claim("country", user.Country ?? string.Empty),
+            new Claim("pincode", user.Pincode ?? string.Empty)
+        }),
+                Expires = DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:DurationInMinutes"])),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var newJwtToken = tokenHandler.WriteToken(token);
+
+            // Generate a new refresh token
+            var newRefreshToken = Guid.NewGuid().ToString();
+            var refreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+
+            // Update the cookie with the new refresh token
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = refreshTokenExpiry
+            };
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("RefreshToken", newRefreshToken, cookieOptions);
+
+            // Prepare the response
+            var response = new LoginResposeDTO
+            {
+                Username = user.UserName,
+                Id = user.Id,
+                Email = user.Email,
+                Token = newJwtToken,
+                Expiration = tokenDescriptor.Expires.Value,
+            };
+
+            return ResponseHelper.Success(response);
+        }
+
     }
 }

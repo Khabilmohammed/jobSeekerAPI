@@ -20,5 +20,7 @@ namespace jobSeeker.DataAccess.Services.IUserRepositoryService
 
         Task ForgetPasswordAsync(string email);
         Task ResetPasswordAsync(string email, string token, string newPassword);
+
+        Task<APIResponse> RefreshTokenAsync(string refreshToken);
     }
 }

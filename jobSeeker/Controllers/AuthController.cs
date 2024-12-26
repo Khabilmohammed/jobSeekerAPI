@@ -11,7 +11,10 @@ using jobSeeker.Utility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Text;
 using static System.Net.WebRequestMethods;
 
 namespace jobSeeker.Controllers
@@ -102,6 +105,17 @@ namespace jobSeeker.Controllers
                 return Unauthorized(new { Error = ex.Message });
             }
         }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDTO model)
+        {
+            var response = await _authService.RefreshTokenAsync(model.RefreshToken);
+            if (!response.IsSuccess)
+                return StatusCode((int)response.StatusCode, response);
+
+            return Ok(response);
+        }
+
 
         [HttpPost("validate-otp")]
         public async Task<IActionResult> ValidateOTP([FromBody] OTPValidationRequestDTO model)

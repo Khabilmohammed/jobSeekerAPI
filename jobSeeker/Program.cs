@@ -195,6 +195,7 @@ builder.Services.AddScoped<IFollowServices, FollowServices>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IShareRepository, ShareRepository>();
 builder.Services.AddScoped<IShareServices, ShareServices>();
+builder.Services.AddHttpContextAccessor();
 
 
 
