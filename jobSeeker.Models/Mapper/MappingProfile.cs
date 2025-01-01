@@ -102,7 +102,7 @@ namespace jobSeeker.Models.Mapper
                     .ReverseMap();
 
             CreateMap<JobPosting, JobPostingDTO>()
-                .ForPath(dest => dest.CompanyLogo, opt => opt.MapFrom(src => src.Company.LogoUrl))
+                .ForPath(dest => dest.LogoUrl, opt => opt.MapFrom(src => src.Company.LogoUrl))
                 .ReverseMap();
 
             CreateMap<CreateJobPostingDTO, JobPosting>();

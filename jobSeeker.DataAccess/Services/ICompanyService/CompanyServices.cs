@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.ComponentModel.Design;
 using jobSeeker.DataAccess.Services.CloudinaryService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using jobSeeker.DataAccess.Data.Repository.IUserManagementRepo;
 
 namespace jobSeeker.DataAccess.Services.ICompanyService
 {
@@ -17,12 +19,14 @@ namespace jobSeeker.DataAccess.Services.ICompanyService
     {
         private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
-        private readonly CloudinaryServices _cloudinaryServices;    
-        public CompanyServices(ICompanyRepository companyRepository, IMapper mapper, CloudinaryServices cloudinaryServices)
+        private readonly CloudinaryServices _cloudinaryServices;
+        private readonly IUserManagementRepository _userManagementRepository;
+        public CompanyServices(ICompanyRepository companyRepository, IMapper mapper, CloudinaryServices cloudinaryServices, IUserManagementRepository userManagementRepository)
         {
             _companyRepository = companyRepository;
             _mapper = mapper;
             _cloudinaryServices = cloudinaryServices;
+            _userManagementRepository=userManagementRepository;
         }
         public async Task<CompanyDTO> CreateCompanyAsync(CreateCompanyDTO createCompanyDTO)
         {
@@ -62,6 +66,16 @@ namespace jobSeeker.DataAccess.Services.ICompanyService
                     throw new InvalidOperationException("Failed to upload the logo.");
                 }
                 company.LogoUrl = logoUploadResult.Url.ToString();
+                var user = await _userManagementRepository.GetUserByIdAsync(company.UserId.ToString());
+                if (user != null)
+                {
+                    user.ProfilePicture = logoUploadResult.Url.ToString();
+                    var userUpdateResult = await _userManagementRepository.UpdateUserAsync(user);
+                    if (!userUpdateResult)
+                    {
+                        throw new InvalidOperationException("Failed to update the profile picture in ApplicationUser.");
+                    }
+                }
             }
 
             // Handle Banner upload if provided

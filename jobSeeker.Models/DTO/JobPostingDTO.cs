@@ -20,6 +20,6 @@ namespace jobSeeker.Models.DTO
         public DateTime? ExpiryDate { get; set; }
         public string JobType { get; set; }
         public bool IsActive { get; set; }
-        public string CompanyLogo { get; set; }
+        public string LogoUrl { get; set; }
     }
 }
