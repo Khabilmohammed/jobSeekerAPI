@@ -79,10 +79,10 @@ namespace jobSeeker.DataAccess.Data
         .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<JobPosting>()
-    .HasOne<Company>()
-    .WithMany()
-    .HasForeignKey(jp => jp.CompanyId)
-    .OnDelete(DeleteBehavior.Cascade);
+       .HasOne(jp => jp.Company)
+       .WithMany(c => c.JobPostings)
+       .HasForeignKey(jp => jp.CompanyId)
+       .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Payment>()
     .ToTable("Payments")

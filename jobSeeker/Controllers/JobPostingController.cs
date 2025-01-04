@@ -11,7 +11,6 @@ namespace jobSeeker.Controllers
 {
     [Route("api/JobPosting")]
     [ApiController]
-    [Authorize]
     public class JobPostingController : ControllerBase
     {
         private readonly IJobPostingServices _service;

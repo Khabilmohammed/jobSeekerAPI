@@ -32,5 +32,7 @@ namespace jobSeeker.Models
         public string Banner { get; set; }
         public bool IsCompleted { get; set; } = false;
 
+        public ICollection<JobPosting> JobPostings { get; set; }
+
     }
 }

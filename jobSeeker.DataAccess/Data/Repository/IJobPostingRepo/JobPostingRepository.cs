@@ -24,10 +24,10 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
         }
         public async Task<IEnumerable<JobPosting>> GetAllJobPostingsAsync()
         {
-            var currentDate = DateTime.UtcNow; 
+            var currentDate = DateTime.UtcNow;
             var activeJobPostings = await _context.JobPostings
-                 .Include(post => post.Company)
-                .Where(post => post.ExpiryDate > currentDate)  
+                .Include(post => post.Company) // Include the Company navigation property
+                .Where(post => post.ExpiryDate > currentDate)
                 .ToListAsync();
 
             return activeJobPostings;
@@ -40,7 +40,9 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
 
         public async Task<JobPosting?> GetJobPostingByIdAsync(int jobId)
         {
-            return await _context.JobPostings.FindAsync(jobId);
+            return await _context.JobPostings
+         .Include(jp => jp.Company) 
+         .FirstOrDefaultAsync(jp => jp.JobId == jobId);
         }
         public async Task<IEnumerable<JobPosting>> GetCompanyJobPostingsAsync(int companyId)
         {

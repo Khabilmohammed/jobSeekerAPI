@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using jobSeeker.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using jobSeeker.DataAccess.Data;
 namespace jobSeeker.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250102053339_copanymodeladdedJobpostingCollection1")]
+    partial class copanymodeladdedJobpostingCollection1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -516,6 +519,9 @@ namespace jobSeeker.DataAccess.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CompanyId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -557,6 +563,8 @@ namespace jobSeeker.DataAccess.Migrations
                     b.HasKey("JobId");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("CompanyId1");
 
                     b.ToTable("JobPostings");
                 });
@@ -988,11 +996,15 @@ namespace jobSeeker.DataAccess.Migrations
 
             modelBuilder.Entity("jobSeeker.Models.JobPosting", b =>
                 {
-                    b.HasOne("jobSeeker.Models.Company", "Company")
+                    b.HasOne("jobSeeker.Models.Company", null)
                         .WithMany("JobPostings")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("jobSeeker.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId1");
 
                     b.Navigation("Company");
                 });
