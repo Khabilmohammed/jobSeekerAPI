@@ -39,8 +39,14 @@ namespace jobSeeker.Controllers
                 {
                     return BadRequest(ResponseHelper.Error("Failed to apply for the job."));
                 }
-
-                return CreatedAtAction(nameof(GetApplicationById), new { jobApplicationId = jobApplication.JobApplicationId }, jobApplication);
+                _logger.LogDebug("JobApplication created successfully: {@jobApplication}", jobApplication);
+                return Ok(new
+                {
+                    jobApplication.JobApplicationId,
+                    jobApplication.FullName,
+                    jobApplication.Status,
+                    jobApplication.ApplicationDate
+                });
             }
             catch (Exception ex)
             {
