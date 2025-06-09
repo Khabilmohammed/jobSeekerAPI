@@ -23,28 +23,57 @@ namespace jobSeeker.DataAccess.Services.CertificateService
 
         public async Task<CertificateDto> CreateCertificateAsync(CreateCertificateDto createCertificateDto, string userId)
         {
-            var certificate = _mapper.Map<Certificate>(createCertificateDto);
-            certificate.UserId = userId;
+            try
+            {
+                var certificate = _mapper.Map<Certificate>(createCertificateDto);
+                certificate.UserId = userId;
 
-            var createdCertificate = await _certificateRepository.AddAsync(certificate);
-            return _mapper.Map<CertificateDto>(createdCertificate);
+                var createdCertificate = await _certificateRepository.AddAsync(certificate);
+                return _mapper.Map<CertificateDto>(createdCertificate);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Error while creating certificate.", ex);
+            }
+            
         }
 
         public async Task<CertificateDto> GetCertificateByIdAsync(int id)
         {
-            var certificate = await _certificateRepository.GetByIdAsync(id);
-            return _mapper.Map<CertificateDto>(certificate);
+            try
+            {
+                var certificate = await _certificateRepository.GetByIdAsync(id);
+                return _mapper.Map<CertificateDto>(certificate);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while retrieving certificate by ID.", ex);
+            }
         }
 
         public async Task<List<CertificateDto>> GetCertificatesByUserIdAsync(string userId)
         {
-            var certificates = await _certificateRepository.GetByUserIdAsync(userId);
-            return _mapper.Map<List<CertificateDto>>(certificates);
+            try
+            {
+                var certificates = await _certificateRepository.GetByUserIdAsync(userId);
+                return _mapper.Map<List<CertificateDto>>(certificates);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while retrieving certificates by user ID.", ex);
+            }
         }
 
         public async Task DeleteCertificateAsync(int id)
         {
-            await _certificateRepository.DeleteAsync(id);
+            try
+            {
+                await _certificateRepository.DeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while deleting certificate.", ex);
+            }
         }
 
     }

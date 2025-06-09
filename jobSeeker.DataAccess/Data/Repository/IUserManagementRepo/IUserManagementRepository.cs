@@ -19,5 +19,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserManagementRepo
         Task<bool> AssignRoleAsync(string userId, string newRole);
         Task<bool> UserExistsAsync(string userId);
 
+        Task<bool> ReactivateUserAsync(string userId);
+
     }
 }

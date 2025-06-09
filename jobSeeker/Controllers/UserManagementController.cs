@@ -99,6 +99,20 @@ namespace jobSeeker.Controllers
             return Ok(ResponseHelper.Success("User deactivated successfully"));
         }
 
+        [HttpPost("reactivate/{userId}")]
+        public async Task<IActionResult> ReactivateUser(string userId)
+        {
+            var result = await _userManagementService.ReactivateUserAsync(userId);
+            if (!result)
+            {
+                _logger.LogWarning("Failed to reactivate user: {UserId}", userId);
+                return BadRequest("Failed to reactivate user");
+            }
+
+            _logger.LogInformation("Successfully reactivated user: {UserId}", userId);
+            return Ok(ResponseHelper.Success("User reactivated successfully"));
+        }
+
         [HttpPost("changeuserrole")]
         [Authorize]
         public async Task<IActionResult> ChangeUserRole([FromBody] ChangeUserRoleRequestDTO request) // Assuming you have a DTO for the request

@@ -113,6 +113,18 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserManagementRepo
             return true; // Deactivation successful
         }
 
+        public async Task<bool> ReactivateUserAsync(string userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return false;
+
+            user.LockoutEnd = null; // Remove lockout
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
         public async Task<bool> AssignRoleAsync(string userId, string newRole)
         {
             var user = await _context.Users.FindAsync(userId);

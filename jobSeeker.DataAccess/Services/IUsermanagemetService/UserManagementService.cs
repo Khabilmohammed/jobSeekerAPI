@@ -76,6 +76,12 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
         }
 
 
+        public async Task<bool> ReactivateUserAsync(string userId)
+        {
+            return await _userManagementRepository.ReactivateUserAsync(userId);
+        }
+
+
         public async Task<bool> ChangeUserRoleAsync(string userId, string newRole)
         {
             // Validate the new role (you might have a list of allowed roles like "Admin", "User", "Company")

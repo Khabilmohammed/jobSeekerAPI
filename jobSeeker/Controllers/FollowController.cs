@@ -20,59 +20,104 @@ namespace jobSeeker.Controllers
         [HttpPost("follow")]
         public async Task<IActionResult> Follow([FromBody] FollowDTO followDto)
         {
-            var result = await _followService.FollowAsync(followDto);
-            if (!result)
-                return BadRequest("Unable to follow the user.");
+            try
+            {
+                var result = await _followService.FollowAsync(followDto);
+                if (!result)
+                    return BadRequest("Unable to follow the user.");
 
-            return Ok("Followed successfully.");
+                return Ok("Followed successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error while following: {ex.Message}");
+            }
+
+           
         }
 
         [HttpPost("unfollow")]
         public async Task<IActionResult> Unfollow([FromBody] FollowDTO followDto)
         {
-            var result = await _followService.UnfollowAsync(followDto);
-            if (!result)
-                return BadRequest("Unable to unfollow the user.");
+            try
+            {
+                var result = await _followService.UnfollowAsync(followDto);
+                if (!result)
+                    return BadRequest("Unable to unfollow the user.");
 
-            return Ok("Unfollowed successfully.");
+                return Ok("Unfollowed successfully.");
+            }catch (Exception ex)
+            {
+                return StatusCode(500, $"Error while unfollowing: {ex.Message}");
+            }
+           
         }
 
 
         [HttpGet("{userId}/followers")]
         public async Task<IActionResult> GetFollowers(string userId)
         {
-            var followers = await _followService.GetFollowersAsync(userId);
-            if (followers == null)
-                return NotFound("User not found or has no followers.");
+            try
+            {
+                var followers = await _followService.GetFollowersAsync(userId);
+                if (followers == null)
+                    return NotFound("User not found or has no followers.");
 
-            return Ok(followers);
+                return Ok(followers);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"Error while unfollowing: {ex.Message}");
+            }
+
         }
 
         [HttpGet("{userId}/following")]
         public async Task<IActionResult> GetFollowing(string userId)
         {
-            var following = await _followService.GetFollowingAsync(userId);
-            if (following == null)
-                return NotFound("User not found or not following anyone.");
+            try
+            {
+                var following = await _followService.GetFollowingAsync(userId);
+                if (following == null)
+                    return NotFound("User not found or not following anyone.");
 
-            return Ok(following);
+                return Ok(following);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error while retrieving following list: {ex.Message}");
+            }
         }
 
         [HttpGet("{followerId}/{followingId}/status")]
         public async Task<IActionResult> IsFollowing(string followerId, string followingId)
         {
-            var isFollowing = await _followService.IsFollowingAsync(followerId, followingId);
-            return Ok(new { isFollowing });
+           try
+            {
+                var isFollowing = await _followService.IsFollowingAsync(followerId, followingId);
+                return Ok(new { isFollowing });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error while checking follow status: {ex.Message}");
+            }
         }
 
         [HttpGet("{userId}/people-you-may-know")]
         public async Task<IActionResult> GetPeopleYouMayKnow(string userId, [FromQuery] int count = 3)
         {
-            var suggestions = await _followService.GetPeopleYouMayKnowAsync(userId, count);
-            if (suggestions == null || !suggestions.Any())
-                return NotFound("No suggestions available.");
+            try
+            {
+                var suggestions = await _followService.GetPeopleYouMayKnowAsync(userId, count);
+                if (suggestions == null || !suggestions.Any())
+                    return NotFound("No suggestions available.");
 
-            return Ok(suggestions);
+                return Ok(suggestions);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error while retrieving suggestions: {ex.Message}");
+            }
         }
 
 

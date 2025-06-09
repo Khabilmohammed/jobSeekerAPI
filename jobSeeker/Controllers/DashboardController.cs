@@ -22,27 +22,42 @@ namespace jobSeeker.Controllers
         [HttpGet("stats")]
         public async Task<IActionResult> GetDashboardStats()
         {
-            var totalUsers = await _context.Users.CountAsync();
-            var companyUsers = await _context.Companies.CountAsync();
-            var socialMediaPosts = await _context.Posts.CountAsync();
-            var jobPosts = await _context.JobPostings.CountAsync();
-            var jobApplications = await _context.JobApplications.CountAsync();
-
-            return Ok(new
+            try
             {
-                totalUsers,
-                companyUsers,
-                socialMediaPosts,
-                jobPosts,
-                jobApplications
-            });
+                var totalUsers = await _context.Users.CountAsync();
+                var companyUsers = await _context.Companies.CountAsync();
+                var socialMediaPosts = await _context.Posts.CountAsync();
+                var jobPosts = await _context.JobPostings.CountAsync();
+                var jobApplications = await _context.JobApplications.CountAsync();
+
+                return Ok(new
+                {
+                    totalUsers,
+                    companyUsers,
+                    socialMediaPosts,
+                    jobPosts,
+                    jobApplications
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+
         }
 
         [HttpGet("monthly-stats")]
         public async Task<IActionResult> GetMonthlyStats()
         {
-            var stats = await GetMonthlyStatsAsync();
-            return Ok(stats);
+            try
+            {
+                var stats = await GetMonthlyStatsAsync();
+                return Ok(stats);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         private async Task<MonthlyStatsDTO> GetMonthlyStatsAsync()
@@ -78,8 +93,16 @@ namespace jobSeeker.Controllers
         [HttpGet("engagement-metrics")]
         public async Task<IActionResult> GetEngagementMetrics()
         {
-            var metrics = await GetEngagementMetricsAsync();
-            return Ok(metrics);
+            try
+            {
+                var metrics = await GetEngagementMetricsAsync();
+                return Ok(metrics);
+            }
+            catch (Exception ex)
+            {
+               
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         private async Task<EngagementMetricsDTO> GetEngagementMetricsAsync()
