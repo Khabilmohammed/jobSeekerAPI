@@ -53,14 +53,10 @@ namespace jobSeeker.DataAccess.Services.CloudinaryService
         public async Task<string> UploadFileAsync(IFormFile file, string folderName)
         {
             if (file == null || file.Length <= 0)
-            {
                 throw new ArgumentException("Invalid file provided for upload.");
-            }
 
             if (string.IsNullOrWhiteSpace(folderName))
-            {
                 throw new ArgumentException("Folder name must not be null or empty.");
-            }
 
             try
             {
@@ -69,23 +65,23 @@ namespace jobSeeker.DataAccess.Services.CloudinaryService
                 var uploadParams = new RawUploadParams
                 {
                     File = new FileDescription(file.FileName, stream),
-                    Folder = folderName
+                    PublicId = $"{folderName}/{Path.GetFileNameWithoutExtension(file.FileName)}",
+                    
                 };
 
                 var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
                 if (uploadResult.Error != null)
-                {
                     throw new Exception(uploadResult.Error.Message);
-                }
 
-                return uploadResult.SecureUrl.AbsoluteUri;
+                return uploadResult.SecureUrl?.AbsoluteUri ?? throw new Exception("Upload returned null URL.");
             }
             catch (Exception ex)
             {
                 throw new Exception($"Error uploading file to Cloudinary: {ex.Message}");
             }
         }
+
 
         public async Task<DeletionResult> DeleteImageAsync(string publicId)
         {

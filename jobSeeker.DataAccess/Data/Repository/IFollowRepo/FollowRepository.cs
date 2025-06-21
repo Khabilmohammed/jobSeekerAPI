@@ -45,13 +45,18 @@ namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
         {
             return await (from follow in _context.Follows
                           join user in _context.ApplicationUsers
-                          on follow.FollowerId equals user.Id
+                              on follow.FollowerId equals user.Id
+                          join userRole in _context.UserRoles
+                              on user.Id equals userRole.UserId
+                          join role in _context.Roles
+                              on userRole.RoleId equals role.Id
                           where follow.FollowingId == userId
                           select new followUserdetailDTO
                           {
                               UserId = user.Id,
                               FirstName = user.FirstName,
                               ProfilePicture = user.ProfilePicture,
+                              userRole = role.Name
                           }).ToListAsync();
         }
 
@@ -59,13 +64,18 @@ namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
         {
             return await (from follow in _context.Follows
                           join user in _context.ApplicationUsers
-                          on follow.FollowingId equals user.Id
+                              on follow.FollowingId equals user.Id
+                          join userRole in _context.UserRoles
+                              on user.Id equals userRole.UserId
+                          join role in _context.Roles
+                              on userRole.RoleId equals role.Id
                           where follow.FollowerId == userId
                           select new followUserdetailDTO
                           {
                               UserId = user.Id,
                               FirstName = user.FirstName,
-                              ProfilePicture=user.ProfilePicture,
+                              ProfilePicture = user.ProfilePicture,
+                              userRole = role.Name
                           }).ToListAsync();
         }
         public async Task<bool> IsFollowingAsync(string followerId, string followingId)
@@ -80,17 +90,21 @@ namespace jobSeeker.DataAccess.Data.Repository.IFollowRepo
                 .Where(f => f.FollowerId == userId)
                 .Select(f => f.FollowingId);
 
-            return await _context.ApplicationUsers
-                .Where(user => user.Id != userId && !followedUsers.Contains(user.Id))
-                .Select(user => new followUserdetailDTO
-                {
-                    UserId = user.Id,
-                    FirstName = user.FirstName,
-                    ProfilePicture = user.ProfilePicture,
-                })
-                .Take(count)
-                .ToListAsync();
+            var result = await (from user in _context.Users
+                                where user.Id != userId && !followedUsers.Contains(user.Id)
+                                join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                                join role in _context.Roles on userRole.RoleId equals role.Id
+                                select new followUserdetailDTO
+                                {
+                                    UserId = user.Id,
+                                    FirstName = user.FirstName,
+                                    ProfilePicture = user.ProfilePicture,
+                                    userRole = role.Name
+                                })
+                               .Take(count)
+                               .ToListAsync();
 
+            return result;
         }
     }
 }

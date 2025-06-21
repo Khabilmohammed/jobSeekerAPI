@@ -26,9 +26,9 @@ namespace jobSeeker.DataAccess.Services.IJobPostingService
             var createdJobPosting = await _repository.AddJobPostingAsync(jobPosting);
             return _mapper.Map<JobPostingDTO>(createdJobPosting);
         }
-        public async Task<IEnumerable<JobPostingDTO>> GetAllJobPostingsAsync()
+        public async Task<IEnumerable<JobPostingDTO>> GetAllJobPostingsAsync(string? location, string? jobType, string? experience)
         {
-            var jobPostings = await _repository.GetAllJobPostingsAsync();
+            var jobPostings = await _repository.GetAllJobPostingsAsync(location, jobType, experience);
             return jobPostings.Select(post => new JobPostingDTO
             {
                 JobId = post.JobId,

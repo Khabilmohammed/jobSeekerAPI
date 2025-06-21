@@ -10,7 +10,7 @@ namespace jobSeeker.DataAccess.Services.IJobPostingService
     public interface IJobPostingServices
     {
         Task<JobPostingDTO> CreateJobPostingAsync(CreateJobPostingDTO createJobPostingDTO);
-        Task<IEnumerable<JobPostingDTO>> GetAllJobPostingsAsync();
+        Task<IEnumerable<JobPostingDTO>> GetAllJobPostingsAsync(string? location, string? jobType, string? experience);
 
         Task<IEnumerable<JobPostingDTO>> GetAllJobPostingsAdminAsync();
         Task<JobPostingDTO?> GetJobPostingByIdAsync(int jobId);

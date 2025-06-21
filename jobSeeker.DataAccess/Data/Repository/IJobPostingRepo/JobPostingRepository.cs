@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
 {
@@ -22,20 +23,35 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
             await _context.SaveChangesAsync();
             return jobPosting;
         }
-        public async Task<IEnumerable<JobPosting>> GetAllJobPostingsAsync()
+        public async Task<IEnumerable<JobPosting>> GetAllJobPostingsAsync(string? location, string? jobType, string? experience)
         {
             var currentDate = DateTime.UtcNow;
-            var activeJobPostings = await _context.JobPostings
-                .Include(post => post.Company) // Include the Company navigation property
-                .Where(post => post.ExpiryDate > currentDate)
-                .ToListAsync();
+            var query = _context.JobPostings
+           .Include(post => post.Company)
+           .Where(post => post.ExpiryDate > currentDate)
+           .AsQueryable();
 
-            return activeJobPostings;
+            if (!string.IsNullOrEmpty(location))
+            {
+                query = query.Where(post => post.Location.Contains(location));
+            }
+
+            if (!string.IsNullOrEmpty(jobType))
+            {
+                query = query.Where(post => post.JobType == jobType);
+            }
+
+            if (!string.IsNullOrEmpty(experience))
+            {
+                query = query.Where(post => post.ExperienceRequired.Contains(experience));
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<JobPosting>> GetAllJobPostingsAdminAsync()
         {
-            return await _context.JobPostings.ToListAsync();
+            return await _context.JobPostings.OrderByDescending(jp => jp.JobId).ToListAsync();
         }
 
         public async Task<JobPosting?> GetJobPostingByIdAsync(int jobId)

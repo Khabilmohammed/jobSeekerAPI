@@ -56,12 +56,14 @@ namespace jobSeeker.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllJobPostings()
+        public async Task<IActionResult> GetAllJobPostings([FromQuery] string? location,
+            [FromQuery] string? jobType,
+            [FromQuery] string? experience)
         {
             try
             {
                 _logger.LogInformation("Fetching all job postings.");
-                var result = await _service.GetAllJobPostingsAsync();
+                var result = await _service.GetAllJobPostingsAsync(location, jobType, experience);
 
                 if (result == null || !result.Any())
                 {
