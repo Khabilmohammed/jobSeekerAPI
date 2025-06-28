@@ -34,9 +34,10 @@ namespace jobSeeker.DataAccess.Services.IEducationService
             return education; // Return the created entity
         }
 
-        public async Task<IEnumerable<Education>> GetEducationsByUserIdAsync(string userId)
+        public async Task<IEnumerable<EducationResponseDTO>> GetEducationsByUserIdAsync(string userId)
         {
-            return await _educationRepository.GetByUserIdAsync(userId);
+            var educations = await _educationRepository.GetByUserIdAsync(userId);
+            return _mapper.Map<IEnumerable<EducationResponseDTO>>(educations);
         }
 
         public async Task<Education> GetEducationByIdAsync(int id)

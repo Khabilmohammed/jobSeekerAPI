@@ -66,7 +66,7 @@ namespace jobSeeker.DataAccess.Services.ICompanyService
                     throw new InvalidOperationException("Failed to upload the logo.");
                 }
                 company.LogoUrl = logoUploadResult.Url.ToString();
-                var user = await _userManagementRepository.GetUserByIdAsync(company.UserId.ToString());
+                var user = await _userManagementRepository.GetApplicationUserByIdAsync(company.UserId.ToString());
                 if (user != null)
                 {
                     user.ProfilePicture = logoUploadResult.Url.ToString();

@@ -51,7 +51,7 @@ namespace jobSeeker.DataAccess.Data.Repository.IJobPostingRepo
 
         public async Task<IEnumerable<JobPosting>> GetAllJobPostingsAdminAsync()
         {
-            return await _context.JobPostings.OrderByDescending(jp => jp.JobId).ToListAsync();
+            return await _context.JobPostings.Include(jp => jp.Company).OrderByDescending(jp => jp.JobId).ToListAsync();
         }
 
         public async Task<JobPosting?> GetJobPostingByIdAsync(int jobId)

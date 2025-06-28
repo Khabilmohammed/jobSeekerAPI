@@ -1,4 +1,5 @@
 ﻿using jobSeeker.Models;
+using jobSeeker.Models.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -49,10 +50,37 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserManagementRepo
             return users;
         }
 
-
-        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
+        public async Task<ApplicationUser> GetApplicationUserByIdAsync(string userId)
         {
             return await _context.Users.FindAsync(userId);
+        }
+
+
+        public async Task<UserProfileDTO> GetUserByIdAsync(string userId)
+        {
+            var user = await _context.Users
+            .Include(u => u.Followers)
+            .Include(u => u.Following)
+            .Include(u => u.Posts)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null) return null;
+
+            return new UserProfileDTO
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                MiddleName = user.MiddleName,
+                LastName = user.LastName,
+                City = user.City,
+                Country = user.Country,
+                Pincode = user.Pincode,
+                ProfilePicture = user.ProfilePicture,
+                UserName = user.UserName,
+                FollowersCount = user.Followers?.Count ?? 0,
+                FollowingCount = user.Following?.Count ?? 0,
+                PostCount = user.Posts?.Count ?? 0
+            };
         }
 
         public async Task<ApplicationUser> GetUserDetailsAsync(string userId)
@@ -61,14 +89,14 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserManagementRepo
 
             if (user != null)
             {
-                // Load roles for the user
+                
                 if (user != null)
                 {
                     // Since a user can only have one role, select the single role instead of a list
                     user.Role = await (from ur in _context.UserRoles
                                        join r in _context.Roles on ur.RoleId equals r.Id
                                        where ur.UserId == userId
-                                       select r.Name).FirstOrDefaultAsync();  // Fetch the first (and only) role
+                                       select r.Name).FirstOrDefaultAsync();  
                 }
             }
             return user;

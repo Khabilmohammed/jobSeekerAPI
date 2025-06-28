@@ -51,6 +51,13 @@ namespace jobSeeker.Models
         public List<Certificate> Certificates { get; set; } = new List<Certificate>();
         public List<Education> Educations { get; set; }= new List<Education>();
 
+        [InverseProperty("Following")]
+        public ICollection<Follow> Followers { get; set; }
+
+        [InverseProperty("Follower")]
+        public ICollection<Follow> Following { get; set; }
+        public ICollection<Post> Posts { get; set; }
+
         public Company Company { get; set; }
         public ICollection<Message> MessagesSent { get; set; }
         public ICollection<Message> MessagesReceived { get; set; }

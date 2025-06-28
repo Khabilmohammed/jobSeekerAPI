@@ -21,7 +21,7 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
             _userManagementRepository = userManagementRepository;
             _cloudinaryServices = cloudinaryServices;
         }
-        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
+        public async Task<UserProfileDTO> GetUserByIdAsync(string userId)
         {
             return await _userManagementRepository.GetUserByIdAsync(userId);
         }
@@ -34,7 +34,7 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
         public async Task<bool> UpdateUserAsync(UpdateUserDTO updateUserDto)
         {
             // Fetch the existing user
-            var user = await _userManagementRepository.GetUserByIdAsync(updateUserDto.UserId);
+            var user = await _userManagementRepository.GetApplicationUserByIdAsync(updateUserDto.UserId);
 
             if (user == null)
                 throw new ArgumentException("User not found.");

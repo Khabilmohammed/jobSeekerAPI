@@ -11,7 +11,7 @@ namespace jobSeeker.DataAccess.Services.IEducationService
     public interface IEducationServices
     {
         Task<Education> AddEducationAsync(CreateEducationDTO createEducationDTO);
-        Task<IEnumerable<Education>> GetEducationsByUserIdAsync(string userId);
+        Task<IEnumerable<EducationResponseDTO>> GetEducationsByUserIdAsync(string userId);
         Task<Education> GetEducationByIdAsync(int id);
         Task<Education> UpdateEducationAsync(int id, EducationResponseDTO createEducationDTO);
         Task<bool> DeleteEducationAsync(int id);

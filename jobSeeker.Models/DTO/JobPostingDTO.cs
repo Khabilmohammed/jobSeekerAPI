@@ -21,5 +21,6 @@ namespace jobSeeker.Models.DTO
         public string JobType { get; set; }
         public bool IsActive { get; set; }
         public string LogoUrl { get; set; }
+        public string CompanyName { get; set; }
     }
 }

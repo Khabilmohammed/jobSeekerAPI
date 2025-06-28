@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using jobSeeker.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using jobSeeker.DataAccess.Data;
 namespace jobSeeker.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250625083307_applicationuserclass_add_post_following_folwers")]
+    partial class applicationuserclass_add_post_following_folwers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -441,17 +444,25 @@ namespace jobSeeker.DataAccess.Migrations
             modelBuilder.Entity("jobSeeker.Models.Follow", b =>
                 {
                     b.Property<string>("FollowerId")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(0);
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FollowingId")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(1);
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationUserId1")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("FollowedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("FollowerId", "FollowingId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("ApplicationUserId1");
 
                     b.HasIndex("FollowingId");
 
@@ -949,14 +960,22 @@ namespace jobSeeker.DataAccess.Migrations
 
             modelBuilder.Entity("jobSeeker.Models.Follow", b =>
                 {
-                    b.HasOne("jobSeeker.Models.ApplicationUser", "Follower")
+                    b.HasOne("jobSeeker.Models.ApplicationUser", null)
+                        .WithMany("Followers")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("jobSeeker.Models.ApplicationUser", null)
                         .WithMany("Following")
+                        .HasForeignKey("ApplicationUserId1");
+
+                    b.HasOne("jobSeeker.Models.ApplicationUser", "Follower")
+                        .WithMany()
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("jobSeeker.Models.ApplicationUser", "Following")
-                        .WithMany("Followers")
+                        .WithMany()
                         .HasForeignKey("FollowingId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();

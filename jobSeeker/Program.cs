@@ -1,54 +1,55 @@
 using jobSeeker.DataAccess.Data;
+using jobSeeker.DataAccess.Data.Repository.CertificateRepo;
+using jobSeeker.DataAccess.Data.Repository.ICommentRepo;
+using jobSeeker.DataAccess.Data.Repository.ICompanyRepo;
+using jobSeeker.DataAccess.Data.Repository.IEducationRepo;
+using jobSeeker.DataAccess.Data.Repository.IExpericeRepo;
+using jobSeeker.DataAccess.Data.Repository.IFollowRepo;
+using jobSeeker.DataAccess.Data.Repository.IJobApplicationRepo;
+using jobSeeker.DataAccess.Data.Repository.IJobPostingRepo;
+using jobSeeker.DataAccess.Data.Repository.ILikeRepo;
+using jobSeeker.DataAccess.Data.Repository.ISavedRepo;
+using jobSeeker.DataAccess.Data.Repository.IShareRepo;
+using jobSeeker.DataAccess.Data.Repository.IStoryRepo;
+using jobSeeker.DataAccess.Data.Repository.IUserManagementRepo;
 using jobSeeker.DataAccess.Data.Repository.IUserRepository;
+using jobSeeker.DataAccess.Data.Repository.MessageRepo;
+using jobSeeker.DataAccess.Services.CertificateService;
 using jobSeeker.DataAccess.Services.CloudinaryService;
+using jobSeeker.DataAccess.Services.ICommentService;
+using jobSeeker.DataAccess.Services.ICompanyService;
+using jobSeeker.DataAccess.Services.IEducationService;
 using jobSeeker.DataAccess.Services.IEmailService;
+using jobSeeker.DataAccess.Services.IExperienceService;
+using jobSeeker.DataAccess.Services.IFollowService;
+using jobSeeker.DataAccess.Services.IJobApplicationService;
+using jobSeeker.DataAccess.Services.IJobPostingService;
+using jobSeeker.DataAccess.Services.ILikeSerivce;
 using jobSeeker.DataAccess.Services.IPostService;
+using jobSeeker.DataAccess.Services.ISavedPostService;
+using jobSeeker.DataAccess.Services.IShareService;
+using jobSeeker.DataAccess.Services.IStoryService;
 using jobSeeker.DataAccess.Services.ITokenBlacklistService;
+using jobSeeker.DataAccess.Services.IUsermanagemetService;
 using jobSeeker.DataAccess.Services.IUserRepositoryService;
 using jobSeeker.DataAccess.Services.IWhetherForCastService;
 using jobSeeker.DataAccess.Services.JWTBlackListService;
 using jobSeeker.DataAccess.Services.OtpService;
+using jobSeeker.DataAccess.Services.PymentService;
+using jobSeeker.DataAccess.Services.StoryCleanupService;
+using jobSeeker.DataAccess.Services.TokenService;
 using jobSeeker.GlobalErrorHandler;
+using jobSeeker.Middlewares;
 using jobSeeker.Models;
 using jobSeeker.Models.Mapper;
+using jobSeeker.SingleR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using Serilog;
-using jobSeeker.DataAccess.Services.TokenService;
-using jobSeeker.DataAccess.Data.Repository.IUserManagementRepo;
-using jobSeeker.DataAccess.Services.IUsermanagemetService;
-using jobSeeker.DataAccess.Data.Repository.IStoryRepo;
-using jobSeeker.DataAccess.Services.IStoryService;
-using jobSeeker.DataAccess.Services.StoryCleanupService;
-using jobSeeker.DataAccess.Data.Repository.ILikeRepo;
-using jobSeeker.DataAccess.Services.ILikeSerivce;
-using jobSeeker.DataAccess.Data.Repository.ICommentRepo;
-using jobSeeker.DataAccess.Services.ICommentService;
-using jobSeeker.DataAccess.Data.Repository.ISavedRepo;
-using jobSeeker.DataAccess.Services.ISavedPostService;
-using jobSeeker.DataAccess.Data.Repository.IExpericeRepo;
-using jobSeeker.DataAccess.Services.IExperienceService;
-using jobSeeker.DataAccess.Data.Repository.CertificateRepo;
-using jobSeeker.DataAccess.Services.CertificateService;
-using jobSeeker.DataAccess.Data.Repository.IEducationRepo;
-using jobSeeker.DataAccess.Services.IEducationService;
-using jobSeeker.DataAccess.Data.Repository.ICompanyRepo;
-using jobSeeker.DataAccess.Services.ICompanyService;
-using jobSeeker.DataAccess.Data.Repository.IJobPostingRepo;
-using jobSeeker.DataAccess.Services.IJobPostingService;
-using jobSeeker.DataAccess.Services.PymentService;
-using jobSeeker.DataAccess.Data.Repository.IJobApplicationRepo;
-using jobSeeker.DataAccess.Services.IJobApplicationService;
-using jobSeeker.DataAccess.Data.Repository.IFollowRepo;
-using jobSeeker.DataAccess.Services.IFollowService;
-using jobSeeker.DataAccess.Data.Repository.MessageRepo;
-using jobSeeker.SingleR;
-using jobSeeker.DataAccess.Data.Repository.IShareRepo;
-using jobSeeker.DataAccess.Services.IShareService;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -77,7 +78,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("https://job-seeker-front-end.vercel.app") 
+        policy.WithOrigins("http://localhost:3000") 
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -226,6 +227,7 @@ app.UseCors("AllowAll");
 
 // Ensure correct middleware order
 app.UseAuthentication();
+app.UseMiddleware<BlockedUserMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

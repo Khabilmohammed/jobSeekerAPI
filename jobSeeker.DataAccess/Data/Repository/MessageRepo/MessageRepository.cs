@@ -66,7 +66,7 @@ namespace jobSeeker.DataAccess.Data.Repository.MessageRepo
                 || m.Recipient.UserName==recipientUsername
                 && m.Sender.UserName==currentUsername && m.SenderDeleted==false
                 )
-                .OrderBy(m=>m.SentAt)
+                .OrderByDescending(m=>m.SentAt)
                 .ToListAsync();
 
             var unreadMessages=messages.Where(m=>m.DateRead==null 

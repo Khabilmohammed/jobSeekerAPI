@@ -1,4 +1,5 @@
 ﻿using jobSeeker.Models;
+using jobSeeker.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace jobSeeker.DataAccess.Data.Repository.IUserManagementRepo
 {
     public interface IUserManagementRepository
     {
-        Task<ApplicationUser> GetUserByIdAsync(string userId);
+        Task<ApplicationUser> GetApplicationUserByIdAsync(string userId);
+        Task<UserProfileDTO> GetUserByIdAsync(string userId);
         Task<List<ApplicationUser>> GetAllUsersAsync();
         Task<bool> UpdateUserAsync(ApplicationUser user);
         Task DeleteUserAsync(string userId);

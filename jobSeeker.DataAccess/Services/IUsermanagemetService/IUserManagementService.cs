@@ -10,7 +10,7 @@ namespace jobSeeker.DataAccess.Services.IUsermanagemetService
 {
     public interface IUserManagementService
     {
-        Task<ApplicationUser> GetUserByIdAsync(string userId);
+        Task<UserProfileDTO> GetUserByIdAsync(string userId);
         Task<List<ApplicationUser>> GetAllUsersAsync();
         Task DeleteUserAsync(string userId);
         Task<ApplicationUser> GetUserDetailsAsync(string userId);
