@@ -78,7 +78,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") 
+        policy.WithOrigins("https://job-seeker-front-end.vercel.app") 
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
